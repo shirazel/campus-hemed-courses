@@ -1088,6 +1088,19 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
   }catch(err){
     console.warn('בדיקת הסיסמה נכשלה — השרת יבדוק אותה שוב בשליחה',err);
   }
+  /* קורס מלא — השרת חוסם הרשמה מעבר למכסה; כאן בודקים מראש כדי להציג הודעה ברורה */
+  try{
+    const fullResp=await jsonpGet({action:'checkFull',course:courseName});
+    if(fullResp && fullResp.full===true){
+      dupMsg.textContent='הקורס הזה כבר מלא. אפשר לבחור קורס אחר.';
+      dupMsg.style.display='block';
+      submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←'; checkNote.style.display='none';
+      loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} });
+      return;
+    }
+  }catch(err){
+    console.warn('בדיקת מכסה נכשלה — השרת יבדוק אותה שוב בשליחה',err);
+  }
   try{
     const resp=await jsonpGet({action:'checkId',idNumber});
     if(resp && resp.found){
