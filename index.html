@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>קטלוג קורסים והרשמה — קמפוס חמ"ד</title>
+</head>
+<body style="margin:0">
+<style>
+html.pg-locked body>div[dir="rtl"]{display:none}
+#pgGate{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#EAF4FA,#fff);font-family:'Assistant','Rubik',Arial,sans-serif;direction:rtl}
+html.pg-locked #pgGate{display:flex}
+#pgGate form{background:#fff;border-radius:24px;padding:34px 30px;width:min(92vw,360px);text-align:center;
+  box-shadow:0 2px 8px rgba(27,94,140,.08),0 12px 32px rgba(27,94,140,.1)}
+#pgGate h1{margin:0 0 6px;font-size:1.4rem;color:#22303D}
+#pgGate p{margin:0 0 18px;color:#67737D}
+#pgGate input{width:100%;box-sizing:border-box;padding:.75rem 1rem;border:2px solid #5CA6D8;border-radius:999px;
+  font-size:1rem;text-align:center;margin-bottom:12px}
+#pgGate button{width:100%;padding:.75rem;border:0;border-radius:999px;background:#FCAE6B;color:#12233A;
+  font-weight:700;font-size:1rem;cursor:pointer}
+#pgGate .err{color:#b91c1c;font-size:.9rem;min-height:1.2em;margin-top:8px}
+</style>
+<div id="pgGate"><form id="pgGateForm">
+  <img src="logo.png" alt="קמפוס חמ&quot;ד" onerror="this.style.display='none'" style="display:block;margin:0 auto 10px;max-width:150px;height:auto">
+  <h1>קמפוס חמ"ד</h1><p>נא להזין סיסמה כדי להיכנס</p>
+  <input type="password" id="pgGatePw" placeholder="סיסמה" autocomplete="off" autofocus>
+  <button type="submit">כניסה</button><div class="err" id="pgGateErr"></div>
+</form></div>
+<script>
+(function(){
+  /* סיסמת כניסה פשוטה (לא אבטחה אמיתית — רק למנוע כניסה מקרית). לא תלוי באותיות גדולות/קטנות ורווחים. */
+  var OK='hemed1234', K='pgGateOk';
+  var norm=function(v){return String(v||'').toLowerCase().replace(/\s+/g,'')};
+  var saved=false; try{ saved=sessionStorage.getItem(K)==='1'; }catch(e){}
+  var root=document.documentElement;
+  if(!saved) root.classList.add('pg-locked');
+  document.getElementById('pgGateForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    if(norm(document.getElementById('pgGatePw').value)===OK){
+      try{ sessionStorage.setItem(K,'1'); }catch(e){}
+      root.classList.remove('pg-locked');
+    }else{
+      document.getElementById('pgGateErr').textContent='סיסמה שגויה, נסו שוב';
+    }
+  });
+})();
+</script>
+<!-- קטלוג קורסים קמפוס חמ"ד — להדבקה ב-Wix HTML iframe/Embed -->
+<!-- תוקן 15.9.2026: שליפת הקורסים עברה מ-gid קבוע (1438764445, שכבר לא קיים)
+     לשליפה לפי שם הלשונית ("קורסים תשפ"ז"), כמו שאר הלשוניות בקובץ הזה. -->
+<div dir="rtl" lang="he">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============== צבעי המותג — נדגמו מהאתר האמיתי (Wix) של קמפוס חמ"ד ==============
+   כחול (#5CA6D8) — צבע הכפתורים/ניווט העיקרי · סגול-מוב (#B585BC) — מצב פעיל/הדגשה
+   כתום (#FCAE6B) — צבע החללית בלוגו, הדגשה משנית · שמיים פסטליים — רקע ה-hero */
+:root{
+  --pg-orange:#FCAE6B; --pg-turquoise:#5CA6D8; --pg-coral:#B585BC; --pg-deep-teal:#1B5E8C;
+  --pg-orange-ink:#A85410; --pg-teal-ink:#1B5E8C; --pg-coral-ink:#6B3E73; --pg-teal-solid:#1B5E8C;
+  --pg-text:#22303D; --pg-body:#45535E; --pg-muted:#67737D;
+  --pg-on-orange:#12233A; --pg-on-turquoise:#12233A; --pg-on-coral:#12233A;
+  --pg-tint:#EBF5F3; --pg-orange-tint:#FEF3E7; --pg-teal-tint:#EAF4FA;
+  --pg-surface:#F6F8F9; --pg-border:#E1E7EA; --pg-bg:#FFFFFF;
+  --pg-radius-sm:8px; --pg-radius:16px; --pg-radius-lg:24px; --pg-radius-pill:999px;
+  --pg-shadow:0 2px 8px rgba(27,94,140,.08), 0 12px 32px rgba(27,94,140,.06);
+  --pg-font-head:'Rubik','Assistant','Arial Hebrew',sans-serif;
+  --pg-font-body:'Assistant','Rubik','Arial Hebrew',sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --pg-bg:#16191B; --pg-surface:#1F2325; --pg-border:#33383B; --pg-tint:#1A2124;
+  --pg-orange-tint:#2A1F14; --pg-teal-tint:#14232A;
+  --pg-text:#F2F4F4; --pg-body:#C9CCCE; --pg-muted:#9BA0A3;
+  --pg-orange-ink:#FCAE6B; --pg-teal-ink:#7FC0E8; --pg-coral-ink:#D6AEDE;
+  --pg-shadow:0 2px 8px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.3);
+}}
+*{box-sizing:border-box}
+html,body{direction:rtl}
+input,select,textarea{direction:rtl;text-align:right}
+body{margin:0;background:var(--pg-bg);color:var(--pg-body);
+  font-family:var(--pg-font-body);font-size:1.0625rem;line-height:1.75;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:var(--pg-font-head);color:var(--pg-text);line-height:1.3;letter-spacing:-.01em;margin:0}
+p{margin:0 0 1rem}
+a{color:var(--pg-teal-ink)}
+button,input,select,textarea{font-family:inherit;font-size:inherit}
+.pg-wrap{max-width:1180px;margin-inline:auto;padding-inline:24px}
+.pg-section{padding-block:clamp(28px,5vw,52px)}
+.pg-seam{height:4px;border:0;border-radius:2px;margin:0;
+  background:linear-gradient(to left,var(--pg-turquoise),var(--pg-coral))}
+.pg-eyebrow{font-family:var(--pg-font-head);font-weight:600;font-size:.9375rem;color:var(--pg-teal-ink);margin:0 0 .4rem}
+
+/* header */
+
+/* hero — גרדיאנט שמיים פסטלי, נדגם מרקע האתר האמיתי של הקמפוס */
+.pg-hero{padding-block:clamp(24px,5vw,40px)}
+.pg-hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:700}
+.pg-lede{font-size:1.0625rem;line-height:1.7;max-width:66ch;margin-top:.6rem;color:var(--pg-body)}
+.pg-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:1.2rem}
+.pg-stat{display:inline-flex;align-items:center;gap:.4rem;background:var(--pg-bg);
+  border:1.5px solid var(--pg-turquoise);color:var(--pg-text);font-weight:600;
+  font-size:.9rem;padding:.35rem .85rem;border-radius:var(--pg-radius-pill)}
+.pg-stat b{color:var(--pg-teal-ink)}
+
+/* controls */
+.pg-controls{position:sticky;top:0;z-index:5;background:var(--pg-bg);
+  border-bottom:1px solid var(--pg-border);padding-block:14px}
+.pg-controls .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pg-controls select{padding:.55rem .8rem;border:1.5px solid var(--pg-border);
+  border-radius:var(--pg-radius-pill);background:var(--pg-surface);color:var(--pg-text);cursor:pointer}
+.pg-count{font-size:.9rem;color:var(--pg-muted);white-space:nowrap;margin-inline-start:auto}
+.pg-clear{background:none;border:0;color:var(--pg-teal-ink);font-weight:600;cursor:pointer;font-size:.9rem;text-decoration:underline}
+
+/* פס קטן שמופיע אחרי שנבחר בית ספר, ומאפשר להחליף */
+/* פופ-אפ "בחרו בית ספר" — קופץ כשמנסים לפתוח/לבחור קורס בלי בית ספר נבחר.
+   הרקע לבן-שקוף (מלבין את העמוד) ולא כהה, כפי שביקשה שירה — שונה מהמודל
+   הכהה של פרטי הקורס. */
+/* תוקן 16.9.2026: הפופ-אפ הזה חייב תמיד "לצוף" ממש למעלה, בתחילת התוכן —
+   ולא במרכז כל הדף (ר' ההערה הארוכה ליד pinOverlay_ בקוד למטה, שמסבירה
+   למה fixed/absolute+inset:0 לא עובד נכון בתוך Wix). לכן הוא ממוקם
+   ב-HTML ממש בהתחלה (לפני הכל), עם position:sticky כדי שיישאר צמוד
+   לראש התוכן גם אם יש גלילה פנימית. */
+/* שני אלמנטים נפרדים בכוונה: gatePopupOverlay מכהה את **כל** הדף (כולל
+   הקורסים למטה) — הוא absolute+inset:0 בלי הורה ממוקם, כך שהוא נמתח
+   לגובה כל המסמך (לא רק לגובה הנראה), ולכן באמת מסתיר הכל בגלילה.
+   gatePopupWrap הוא רק תיבת הבחירה עצמה, עם position:sticky כדי שהיא
+   תישאר צמודה לראש התוכן (זה מה שפתרנו קודם — לא נוגעים בזה). מפרידים
+   כדי שהכהיה תוכל לכסות שטח גדול בלי להשפיע על מיקום התיבה עצמה. */
+.pg-gatepopup-overlay{position:absolute;inset:0;z-index:59;display:none;
+  background:rgba(15,20,25,.6);backdrop-filter:blur(3px)}
+.pg-gatepopup-overlay.on{display:block}
+.pg-gatepopup-wrap{position:sticky;top:0;z-index:60;display:none}
+.pg-gatepopup-wrap.on{display:flex;align-items:flex-start;justify-content:center;
+  padding:min(14vh,90px) 20px 24px}
+/* פופ-אפ טופס ההרשמה — נפתח מתוך חלון פרטי הקורס (בקשת שירה 16.9.2026).
+   אותה שיטת מיקום מוכחת כמו פופ-אפ בחירת בית הספר. */
+.pg-regpopup-overlay{position:absolute;inset:0;z-index:69;display:none;
+  background:rgba(15,20,25,.6);backdrop-filter:blur(3px)}
+.pg-regpopup-overlay.on{display:block}
+.pg-regpopup-wrap{position:absolute;left:0;right:0;z-index:70;display:none}
+.pg-regpopup-wrap.on{display:flex;align-items:flex-start;justify-content:center;
+  padding:min(6vh,40px) 20px 24px}
+.pg-regpopup{position:relative;background:var(--pg-bg);border-radius:var(--pg-radius-lg);
+  max-width:560px;width:100%;max-height:86vh;overflow:auto;padding:30px 26px 26px;box-shadow:var(--pg-shadow)}
+.pg-gatepopup{position:relative;background:var(--pg-bg);border-radius:var(--pg-radius-lg);max-width:420px;
+  width:100%;padding:30px 26px 26px;box-shadow:var(--pg-shadow);text-align:center}
+.pg-gatepopup h3{margin-bottom:.35rem;font-size:1.2rem}
+.pg-gatepopup .sub{color:var(--pg-muted);font-size:.92rem;margin-bottom:16px}
+.pg-gatepopup select{width:100%;padding:.75rem 1rem;border:2px solid var(--pg-turquoise);
+  border-radius:var(--pg-radius-pill);background:var(--pg-surface);color:var(--pg-text);
+  font-weight:600;font-size:1rem;cursor:pointer}
+.pg-formgate{position:relative}
+.pg-formgate.locked .pg-formgate-lockedfields{opacity:.5;pointer-events:none}
+.pg-formgate-note{display:none;text-align:center;font-weight:600;color:var(--pg-teal-ink);
+  background:var(--pg-teal-tint);border-radius:var(--pg-radius-sm);padding:.7rem 1rem;margin-bottom:12px;
+  cursor:pointer}
+.pg-formgate-note.show{display:block}
+
+/* grid + cards */
+.pg-grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));margin-top:4px}
+.pg-card{background:var(--pg-bg);border:1px solid var(--pg-border);border-radius:var(--pg-radius);
+  overflow:hidden;box-shadow:var(--pg-shadow);display:flex;flex-direction:column;
+  cursor:pointer;transition:transform .15s}
+.pg-card:hover{transform:translateY(-3px)}
+.pg-card .thumb{width:100%;aspect-ratio:21/9;object-fit:cover;display:block;background:var(--pg-tint)}
+.pg-card .thumb.ph{display:flex;align-items:center;justify-content:center;font-size:2.6rem}
+.pg-card .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:.45rem;flex:1}
+.pg-card h3{font-size:1.1rem;font-weight:600;line-height:1.35}
+.pg-badges{display:flex;gap:6px;flex-wrap:wrap}
+.pg-badge{display:inline-block;font-weight:600;font-size:.78rem;padding:.22rem .65rem;border-radius:var(--pg-radius-pill)}
+.pg-badge.orange{background:var(--pg-orange);color:var(--pg-on-orange)}
+.pg-badge.teal{background:var(--pg-turquoise);color:var(--pg-on-turquoise)}
+.pg-badge.coral{background:var(--pg-coral);color:var(--pg-on-coral)}
+.pg-badge.ghost{background:var(--pg-surface);color:var(--pg-muted);border:1px solid var(--pg-border)}
+.pg-meta{font-size:.88rem;color:var(--pg-muted);font-weight:600}
+.pg-desc{font-size:.92rem;color:var(--pg-body);display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden}
+.pg-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
+  font-family:var(--pg-font-head);font-weight:600;font-size:1rem;padding:.65rem 1.3rem;
+  border:0;cursor:pointer;border-radius:var(--pg-radius-pill);text-decoration:none;
+  transition:filter .15s,transform .15s}
+.pg-btn:hover{filter:brightness(.94)}
+.pg-btn--primary{background:var(--pg-orange);color:var(--pg-on-orange)}
+.pg-btn--teal{background:var(--pg-teal-solid);color:#fff}
+.pg-btn--coral{background:var(--pg-coral);color:var(--pg-on-coral)}
+.pg-btn--ghost{background:transparent;color:var(--pg-teal-ink);box-shadow:inset 0 0 0 1.5px currentColor}
+.pg-card .pg-btn{margin-top:auto;align-self:stretch}
+.pg-empty{text-align:center;padding:60px 20px;color:var(--pg-muted)}
+
+/* modal */
+/* מצב "חלון קבוע במרכז" (4.10.2026): כשגובה ה-iframe ב-Wix קטן מגובה התוכן (יש גלילה פנימית),
+   position:fixed ממרכז את החלונות במרכז מה שרואים. מופעל ב-JS (applyFixedMode_). */
+.pg-fixedmode .pg-modal-overlay,.pg-fixedmode .pg-regpopup-overlay,.pg-fixedmode .pg-gatepopup-overlay{position:fixed}
+.pg-fixedmode .pg-modal-wrap,.pg-fixedmode .pg-regpopup-wrap,.pg-fixedmode .pg-gatepopup-wrap{
+  position:fixed;top:0!important;bottom:0;left:0;right:0}
+.pg-fixedmode .pg-modal-wrap.on,.pg-fixedmode .pg-regpopup-wrap.on,.pg-fixedmode .pg-gatepopup-wrap.on{
+  align-items:center;padding:16px}
+.pg-modal-overlay{position:absolute;inset:0;z-index:49;display:none;background:rgba(20,25,27,.55)}
+.pg-modal-overlay.on{display:block}
+.pg-modal-wrap{position:absolute;left:0;right:0;z-index:50;display:none}
+.pg-modal-wrap.on{display:flex;justify-content:center;padding:20px 20px 40px}
+.pg-modal{position:relative;background:var(--pg-bg);border-radius:var(--pg-radius-lg);
+  max-width:640px;width:100%;max-height:90vh;overflow:auto;box-shadow:var(--pg-shadow)}
+.pg-modal img{width:100%;aspect-ratio:3/1;max-height:160px;object-fit:cover;display:block}
+.pg-modal .mbody{padding:22px 26px 28px}
+.pg-modal h2{font-size:1.4rem}
+.pg-mclose{position:absolute;top:10px;inset-inline-end:10px;background:rgba(0,0,0,.45);
+  color:#fff;border:0;width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;z-index:2}
+.pg-dl{display:grid;grid-template-columns:auto 1fr;gap:.55rem 1.1rem;margin:1rem 0;background:var(--pg-tint);
+  border-radius:var(--pg-radius);padding:16px 18px}
+.pg-dl dt{font-family:var(--pg-font-head);font-weight:600;color:var(--pg-teal-ink)}
+.pg-dl dd{margin:0;color:var(--pg-body)}
+/* מיכל להטמעת מצגת/סרטון (יוטיוב/דרייב) בתוך חלון פרטי הקורס — יחס 16:9 */
+.pg-embed{position:relative;width:100%;padding-top:56.25%;border-radius:var(--pg-radius);
+  overflow:hidden;background:var(--pg-tint);margin-bottom:.9rem}
+.pg-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* registration form */
+.pg-form-section{background:var(--pg-surface)}
+.pg-form{background:var(--pg-bg);border:1px solid var(--pg-border);border-radius:var(--pg-radius-lg);
+  padding:clamp(20px,4vw,34px);max-width:640px;margin-inline:auto;box-shadow:var(--pg-shadow)}
+.pg-field{margin-bottom:14px;display:flex;flex-direction:column;gap:.3rem}
+.pg-field label{font-weight:600;font-size:.92rem;color:var(--pg-text)}
+.pg-field input,.pg-field select,.pg-field textarea{padding:.6rem .8rem;border:1.5px solid var(--pg-border);
+  border-radius:var(--pg-radius-sm);background:var(--pg-surface);color:var(--pg-text);width:100%}
+.pg-field textarea{resize:vertical;min-height:70px}
+.pg-formmsg{display:none;padding:.7rem 1rem;border-radius:var(--pg-radius-sm);font-weight:600;margin-bottom:12px}
+.pg-formmsg.ok{display:block;background:var(--pg-teal-tint);color:var(--pg-teal-ink)}
+.pg-formmsg--warn{background:#fef3c7;color:#92400e}
+
+/* footer */
+.pg-footer{background:var(--pg-surface);border-top:1px solid var(--pg-border);padding-block:28px;font-size:.9rem}
+.pg-footer .pg-wrap{display:flex;gap:18px;justify-content:space-between;align-items:center;flex-wrap:wrap;color:var(--pg-muted)}
+.pg-footer a{color:var(--pg-teal-ink);text-decoration:none;border-bottom:1px solid currentColor}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+</style>
+
+
+<div class="pg-gatepopup-overlay" id="gatePopupOverlay"></div>
+<div class="pg-gatepopup-wrap" id="gatePopupWrap" role="dialog" aria-modal="true">
+  <div class="pg-gatepopup">
+    <button class="pg-mclose" id="gatePopupClose" aria-label="סגירה">✕</button>
+    <h3>בחרו את בית הספר שלכם</h3>
+    <p class="sub">כדי לבחור קורס צריך קודם לדעת לאיזה בית ספר אתם שייכים</p>
+    <select id="fMySchoolPopup"><option value="">בחרו בית ספר…</option></select>
+    <select id="fMyGenderPopup" style="display:none;margin-top:8px">
+      <option value="">בית הספר מעורב — את/ה בן או בת?</option>
+      <option value="בנים">בן</option>
+      <option value="בנות">בת</option>
+    </select>
+  </div>
+</div>
+
+<section class="pg-hero">
+  <div class="pg-wrap">
+    <img src="logo.png" alt="קמפוס חמ&quot;ד" onerror="this.style.display='none'" style="display:block;height:120px;width:auto;margin-bottom:10px">
+    <h1>קטלוג קורסים תשפ"ז</h1>
+  </div>
+</section>
+<hr class="pg-seam">
+
+<div class="pg-controls">
+  <div class="pg-wrap row">
+    <select id="fMySchool"><option value="">בחרו בית ספר…</option></select>
+    <select id="fMyGender" style="display:none">
+      <option value="">בית הספר מעורב — את/ה בן או בת?</option>
+      <option value="בנים">בן</option>
+      <option value="בנות">בת</option>
+    </select>
+    <button class="pg-clear" id="btnClear" type="button">איפוס סינון</button>
+    <span class="pg-count" id="resCount"></span>
+  </div>
+  <div class="pg-wrap"><span class="pg-note" id="schoolTrackNote" style="display:block;margin-top:6px"></span></div>
+</div>
+
+<section class="pg-section">
+  <div class="pg-wrap">
+    <div id="grid" class="pg-grid"></div>
+    <div id="emptyMsg" class="pg-empty" style="display:none">לא נמצאו קורסים התואמים את החיפוש.</div>
+  </div>
+</section>
+
+<!-- בקשת שירה 16.9.2026: הטופס הועבר מסעיף קבוע בעמוד הכללי לפופ-אפ שנפתח
+     רק בלחיצה על "מעוניינים — למילוי פרטים" מתוך חלון פרטי הקורס. אותה
+     תיבת HTML/שדות בדיוק כמו קודם — רק העטיפה החיצונית השתנתה מ-section
+     קבוע לפופ-אפ (overlay+sticky, אותה שיטה שכבר עובדת נכון בתוך Wix
+     עבור פופ-אפ בחירת בית הספר). -->
+<div class="pg-regpopup-overlay" id="regPopupOverlay"></div>
+<div class="pg-regpopup-wrap" id="regPopupWrap" role="dialog" aria-modal="true">
+  <div class="pg-regpopup">
+    <button class="pg-mclose" id="regPopupClose" aria-label="סגירה">✕</button>
+    <div id="regFormArea">
+    <p class="pg-eyebrow">מעוניינים?</p>
+    <h2 style="margin-bottom:1rem">מעוניינים להרשם לקורס זה? מלאו את הפרטים, הקפידו על פרטים מדוייקים ונכונים.</h2>
+    <div class="pg-form pg-formgate locked" id="formGate">
+      <div class="pg-formgate-note show" id="formGateNote">בחרו בית ספר כדי להירשם לקורס — לחצו כאן לבחירה</div>
+      <div class="pg-formmsg pg-formmsg--warn" id="dupMsg" style="display:none"></div>
+      <form id="regForm" target="hidden_iframe" method="POST" action="https://script.google.com/macros/s/AKfycbxL5hDOZQmPwE2z-l03ZMjqD2aer3aw6xm-hpY3ppbhtKkvLUjoRbbwlfvZQTVVGlCC/exec">
+        <div class="pg-formgate-lockedfields">
+          <div class="pg-field">
+            <label for="fCourse">קורס מבוקש</label>
+            <select id="fCourse" name="קורס" required>
+              <option value="">בחרו קורס</option>
+            </select>
+          </div>
+          <div class="pg-field">
+            <label for="fSchoolName">שם בית הספר</label>
+            <input type="text" id="fSchoolName" name="בית_ספר" required readonly>
+          </div>
+          <div class="pg-field">
+            <label for="fClass">כיתה</label>
+            <select id="fClass" name="כיתה" required>
+              <option value="">בחרו כיתה</option>
+              <option value="ז'">ז'</option>
+              <option value="ח'">ח'</option>
+              <option value="ט'">ט'</option>
+              <option value="י'">י'</option>
+            </select>
+          </div>
+          <div class="pg-field">
+            <label for="fFirstName">שם פרטי</label>
+            <input type="text" id="fFirstName" name="שם_פרטי" required>
+          </div>
+          <div class="pg-field">
+            <label for="fLastName">שם משפחה</label>
+            <input type="text" id="fLastName" name="שם_משפחה" required>
+          </div>
+          <div class="pg-field">
+            <label for="fPhone">טלפון</label>
+            <input type="tel" id="fPhone" name="טלפון" required>
+          </div>
+          <div class="pg-field">
+            <label for="fEmail">אימייל</label>
+            <input type="email" id="fEmail" name="אימייל" required>
+          </div>
+          <div class="pg-field">
+            <label for="fParentName">שם הורה</label>
+            <input type="text" id="fParentName" name="שם_הורה" required>
+          </div>
+          <div class="pg-field">
+            <label for="fParentPhone">טלפון הורה</label>
+            <input type="tel" id="fParentPhone" name="טלפון_הורה" required>
+          </div>
+          <div class="pg-field">
+            <label for="fParentEmail">אימייל הורה</label>
+            <input type="email" id="fParentEmail" name="אימייל_הורה" required>
+          </div>
+          <div class="pg-field">
+            <label for="fIdNumber">תעודת זהות התלמיד/ה</label>
+            <input type="text" id="fIdNumber" name="תז" required inputmode="numeric" pattern="[0-9]*">
+          </div>
+          <input type="hidden" id="fCancelPrevious" name="cancelPrevious" value="">
+          <div class="pg-btn-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+            <button type="submit" class="pg-btn pg-btn--primary" id="regSubmitBtn">שליחת פרטים ←</button>
+            <div id="checkingNote" style="display:none;font-size:.9rem;color:var(--pg-muted)">בודק שהפרטים תקינים — זה עשוי לקחת כמה שניות…</div>
+          </div>
+        </div>
+      </form>
+      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none"></iframe>
+    </div>
+    </div>
+    <div id="regSuccessArea" style="display:none;text-align:center;padding:26px 10px 6px">
+      <div style="width:64px;height:64px;margin:0 auto .9rem;border-radius:50%;
+        background:linear-gradient(135deg,var(--pg-turquoise),var(--pg-deep-teal));
+        display:flex;align-items:center;justify-content:center;box-shadow:var(--pg-shadow)">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 12.5L9.5 18L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="pg-eyebrow" style="justify-content:center">קמפוס חמ"ד</p>
+      <h2 style="margin-bottom:.6rem">ההרשמה נשלחה!</h2>
+      <p style="margin-bottom:1.4rem;color:var(--pg-body)">נעדכן אותך בהקדם על קבלתך לקורס.</p>
+      <button type="button" class="pg-btn pg-btn--primary" id="regSuccessClose">סגירה</button>
+    </div>
+  </div>
+</div>
+
+<!-- תוקן 16.9.2026: modalOverlay (הכהיה) הוא אלמנט נפרד שמכסה תמיד את כל
+     אורך הדף (inset:0 בלי הורה ממוקם אחר), ו-modalWrap (תיבת הפרטים
+     עצמה) ממוקם ב-JS בדיוק ליד הקורס שעליו לחצו (positionNearTrigger_) —
+     כי אין דרך לדעת מתוך ה-iframe של Wix היכן בדיוק נמצא הגלילה של הדף
+     החיצוני, אבל את המיקום של האלמנט שעליו ממש לחצו כן אפשר לחשב, וזה
+     בהכרח באזור הנראה כרגע (כי המשתמש הרגע לחץ עליו). ר' גם ההערה על
+     gatePopupWrap למעלה בעניין הבעיה המקורית. -->
+<div class="pg-modal-overlay" id="modalOverlay"></div>
+<div class="pg-modal-wrap" id="modalWrap" role="dialog" aria-modal="true">
+  <div class="pg-modal" id="modalBody"></div>
+</div>
+
+<footer class="pg-footer">
+  <div class="pg-wrap">
+    <div>קמפוס חמ"ד · מחוז חיפה</div>
+    <div id="srcNote">טוען נתונים…</div>
+  </div>
+</footer>
+
+<script>
+/* ================= קטלוג קורסים — קמפוס חמ"ד =================
+   שולף חי מלשונית "קורסים תשפ"ז" בגיליון (לפי שם הלשונית, לא לפי gid —
+   תוקן 15.9.2026, כי ה-gid הישן כבר לא קיים), מציג רק קורסים בסטטוס
+   "מאושר". ARTIFACT_MODE מדלג על השליפה החיה (חסימת CSP של דפי Artifact)
+   ומציג ישר את הגיבוי המוטבע. */
+const ARTIFACT_MODE = false;   // true כשמפרסמים כ-Artifact ב-claude.ai
+const FILE_ID='1a7xr86kil66yseNre1cHpFNPj3UYdmY7Zb3arvDh_X8';
+const COURSES_SHEET='קורסים תשפ"ז';   // שם הלשונית (במקום gid קבוע שכבר לא תקף)
+const MASTER_GID='611332690';   // מאסטר מוסדות — לרשימת בתי הספר בסינון
+
+const MAP={
+  name:['שם הקורס','שם קורס','שם'],
+  domain:['תחום'],
+  audience:['מתחם'],
+  track:['רצועה'],
+  teacher:['מורה'],
+  school:['בית ספר'],
+  cap:['מקסימום תלמידים','מקסימום','מקס'],
+  status:['סטטוס'],
+  desc:['תיאור הקורס','תיאור'],
+  image:['תמונה','קישור לתמונה','תמונת קובץ'],
+  prompt:['פרומפט תמונה','פרומפט'],
+  presentationLink:['קישור למצגת','מצגת'],
+  videoLink:['קישור לוידאו','קישור לסרטון','וידאו','סרטון'],
+  syllabusLink:['קישור לסילבוס','סילבוס']
+};
+
+const SLOTS=[{key:'9:30',label:'רצועה 1',time:'09:30–11:00'},
+             {key:'11:10',label:'רצועה 2',time:'11:10–12:40'},
+             {key:'14:00',label:'רצועה 3',time:'14:00–15:30'}];
+const trackLabel=t=>{const s=SLOTS.find(s=>(t||'').includes(s.key)); return s?(s.label+' · '+s.time):(t||'')};
+const trackKeyOf=t=>{const s=SLOTS.find(s=>(t||'').includes(s.key)); return s?s.key:''};
+
+/* תיאורים ידועים מראש (מוזנים מראש עד שתתווסף עמודת "תיאור" בגיליון) */
+const KNOWN_DESC={
+ 'פיתוח אתרים עם בינה מלאכותית':{tags:['ללא ידע קודם'],
+   d:'התלמידים בונים אתר אמיתי משלהם מהרעיון ועד העלייה לאוויר, בעזרת כלי בינה מלאכותית. לומדים לתכנן ממשק, לנסח בקשות מדויקות למחשב ולתקן תקלות — ומסיימים עם מוצר שאפשר להראות.'},
+ 'אונטופ':{tags:['ללא ידע קודם'],
+   d:'קורס תכנות מהיסוד לתלמידים בלי רקע קודם. מתחילים מפקודות פשוטות ומתקדמים לפרויקטים עצמאיים, עם דגש על חשיבה לוגית ופתרון בעיות שלב אחר שלב.'},
+ 'מטצ"ים':{tags:['למידה מבוססת אתגר'],
+   d:'מסלול מדעי־טכנולוגי מבוסס משימות: התלמידים מתמודדים עם אתגרים מעשיים, מתכננים פתרונות ובודקים אותם. למידה מתוך התנסות ולא מתוך הרצאה.'},
+ 'עיצוב גרפי בקנבה':{tags:['תיק עבודות'],
+   d:'שפת העיצוב מהבסיס — צבע, טיפוגרפיה, איזון וקומפוזיציה — ויישום שלה בכלי שהתלמידות ישתמשו בו גם אחר כך. בסוף הקורס כל תלמידה יוצאת עם תיק עבודות משלה.'},
+ 'כתיבה יוצרת — כתיבת ספר, איור והפקה':{tags:['תוצר מודפס'],
+   d:'מרעיון ראשוני לספר מודפס. התלמידות לומדות לבנות דמות ועלילה, לכתוב ולערוך, לאייר ולעצב — ומלוות את הספר שלהן עד ההפקה הסופית.'},
+ 'צרפתית':{tags:['למתחילות'],
+   d:'צרפתית מדוברת מהשיעור הראשון, בשילוב היכרות עם התרבות הצרפתית. הדגש על יכולת לנהל שיחה בסיסית ולא על שינון דקדוק.'},
+ 'אקסליום':{tags:['מיומנויות חשיבה'],
+   d:'תוכנית לפיתוח חשיבה: התלמידים רוכשים אסטרטגיות לפתרון בעיות, ארגון מידע וקבלת החלטות — כלים שמשרתים אותם בכל מקצוע ולא רק בקורס עצמו.'},
+ 'חינוך פיננסי בעידן הבינה המלאכותית':{tags:['כלים לחיים'],
+   d:'כלים מעשיים לניהול כסף בעולם שמשתנה: תקציב, חיסכון, צרכנות נבונה והשפעת הטכנולוגיה על עולם העבודה.'},
+ 'מבוא לקולנוע ועריכת סרטונים':{tags:['תוצר גמור'],
+   d:'צילום ועריכת סרטונים מהבסיס — שפת קולנוע, תסריט קצר, צילום ועריכה בכלים דיגיטליים. כל תלמידה יוצאת עם סרטון קצר משלה.'}
+};
+
+/* גיבוי סטטי — מוצג רק אם השליפה החיה נכשלת, או במצב Artifact */
+const SNAPSHOT=[
+ {name:'עיצוב גרפי בקנבה',domain:'אמנות ועיצוב',audience:'בנות',track:'',teacher:'יוכבד חניא',school:'',cap:15,status:'מאושר',cycles:2},
+ {name:'מטצ"ים',domain:'מדעים',audience:'בנים',track:'',teacher:'ענת רונן אשוח',school:'',cap:15,status:'מאושר',cycles:1},
+ {name:'צרפתית',domain:'שפות',audience:'בנות',track:'',teacher:'יעל זרביב',school:'',cap:15,status:'מאושר',cycles:1},
+ {name:'פיתוח אתרים עם בינה מלאכותית',domain:'טכנולוגיה',audience:'',track:'',teacher:'חניה רחמים',school:'',cap:15,status:'מאושר',cycles:2},
+ {name:'אונטופ',domain:'תכנות',audience:'',track:'',teacher:'אפרת קלרמן',school:'',cap:15,status:'מאושר',cycles:1},
+ {name:'חינוך פיננסי בעידן הבינה המלאכותית',domain:'כלכלה ויזמות',audience:'',track:'',teacher:'רחלה תורג\'מן',school:'',cap:15,status:'מאושר',cycles:2},
+ {name:'מבוא לקולנוע ועריכת סרטונים',domain:'קולנוע ותקשורת',audience:'בנות',track:'',teacher:'אוריה יעקוביאן',school:'',cap:15,status:'מאושר',cycles:2},
+ {name:'כתיבה יוצרת — כתיבת ספר, איור והפקה',domain:'כתיבה ואמנות',audience:'בנים',track:'',teacher:'אורטל שטרית',school:'ישיבת צביה פרדס חנה',cap:15,status:'מאושר',cycles:1},
+ {name:'אקסליום',domain:'מאמן החשיבה',audience:'',track:'',teacher:'יקבע בהמשך',school:'',cap:15,status:'מאושר',cycles:2}
+];
+const SNAP_AT='03/09/2026';
+
+/* רשימת בתי הספר (מאסטר מוסדות) — לתפריט הסינון, גם כשעמודת "בית ספר"
+   בקורסים עצמם עדיין ריקה (רוב הקורסים פתוחים לכלל בתי הספר) */
+const SNAPSHOT_SCHOOLS=['אולפנית אמונה אלישבע','אולפנית אמית שחר','אולפנית שח"ם (ע"ש חיים משה שפירא)',
+ 'אולפנת חריש','אולפנת אמית חיפה','אולפנת צביה חיפה','אולפנת בני עקיבא סגולה','תיכון פלך',
+ 'ישיבת בני עקיבא יבנה','ישיבה תיכונית קרית אתא','ישיבה תנ"כית זכרון יעקב','ישיבת אמית נתיבות דרור',
+ 'ישיבת בני עקיבא - חריש','ישיבה תיכונית פרדס חנה כרכור','תיכון חמ"ד לוינסון למצוינות',
+ 'תיכון שש-שנתי יש"י','תיכון שש-שנתי חמ"ד דרכא אריאל','ישיבת בני עקיבא חדרה'];
+
+/* ---------- עזרי טקסט ---------- */
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>(s||'').trim();
+const cellClean=c=>String(c==null?'':c).trim();
+const baseName=n=>(n||'').replace(/\s*[—–-]\s*מחזור.*$/,'').trim();
+const col=(h,...names)=>{for(const n of names){const i=h.findIndex(c=>(c||'').indexOf(n)>=0);if(i>=0)return i}return -1};
+
+/* נירמול קישורי תמונה — Drive / קישורים שונים -> קישור ישיר להצגה */
+function fixImg(url){
+  url=(url||'').trim(); if(!url) return '';
+  let m=url.match(/drive\.google\.com\/file\/d\/([^/]+)/) || url.match(/[?&]id=([^&]+)/);
+  if(m) return 'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w1200';
+  return url;
+}
+/* בקשת שירה 18.9.2026: להציג את המצגת/הסרטון ישירות בתוך חלון פרטי
+   הקורס (iframe), במקום רק קישור שפותח כרטיסייה חדשה — כדי שיהיה
+   ברור שההטמעה עובדת, ובלי לצאת מהאתר. ממירים יוטיוב/דרייב/סליידס
+   לכתובת "embed"/"preview" הרשמית שלהם, שהיא היחידה שמותר לה לרוץ
+   בתוך iframe. אם הקישור לא מזוהה כאחד מאלה — לא מציגים iframe בכלל
+   (חלק מהאתרים חוסמים הטמעה לגמרי), ומסתפקים בכפתור "פתיחה בחלון נפרד". */
+function youtubeEmbed_(url){
+  url=(url||'').trim(); if(!url) return '';
+  let m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
+  return m?'https://www.youtube.com/embed/'+m[1]:'';
+}
+function driveEmbed_(url){
+  url=(url||'').trim(); if(!url) return '';
+  let m=url.match(/docs\.google\.com\/presentation\/d\/([^/]+)/);
+  if(m) return 'https://docs.google.com/presentation/d/'+m[1]+'/embed';
+  m=url.match(/drive\.google\.com\/file\/d\/([^/]+)/) || url.match(/[?&]id=([^&]+)/);
+  if(m) return 'https://drive.google.com/file/d/'+m[1]+'/preview';
+  return '';
+}
+/* אייקון/גרדיאנט תחליפי כשאין תמונה — צבע לפי תחום */
+const DOMAIN_ICON=[
+  [/טכנולוג|תכנות|סייבר|אתרים/, '💻'], [/מדע|רפוא|פיזיק/, '🔬'],
+  [/אמנות|עיצוב|כתיבה|ליצנ|בובנ/, '🎨'], [/שפ/, '🗣️'],
+  [/כלכל|יזמ|פיננס/, '💰'], [/חשיב|מאמן/, '🧠']
+];
+const DOMAIN_GRAD=['linear-gradient(135deg,#F9A349,#F16E60)','linear-gradient(135deg,#6ECBD9,#52A9B6)',
+  'linear-gradient(135deg,#F16E60,#A85410)','linear-gradient(135deg,#52A9B6,#256069)'];
+function domainIcon(d){const h=DOMAIN_ICON.find(x=>x[0].test(d||'')); return h?h[1]:'📘'}
+function domainGrad(d){let h=0;for(const c of (d||'')) h=(h*31+c.charCodeAt(0))>>>0; return DOMAIN_GRAD[h%DOMAIN_GRAD.length]}
+
+/* ---------- טעינת הגיליון (script tag / JSONP — עוקף CORS גם מ-Wix וגם מ-file://) ---------- */
+let __jsonpN=0;
+function jsonpTable(gid){
+  return new Promise((resolve,reject)=>{
+    const cb='chemedCatCB'+(__jsonpN++)+'_'+Date.now();
+    const timer=setTimeout(()=>{cleanup();reject(new Error('פסק זמן בתגובה מגוגל'))},15000);
+    function cleanup(){try{delete window[cb]}catch(e){window[cb]=undefined}
+      const el=document.getElementById(cb); if(el)el.remove(); clearTimeout(timer);}
+    window[cb]=function(resp){cleanup();
+      if(!resp||resp.status==='error'){reject(new Error('שגיאה בקריאת הגיליון'));return;}
+      resolve(resp.table);};
+    let src='https://docs.google.com/spreadsheets/d/'+FILE_ID+'/gviz/tq?gid='+gid+
+      '&headers=1&tqx=out:json;responseHandler:'+cb;
+    const s=document.createElement('script'); s.id=cb; s.src=src;
+    s.onerror=()=>{cleanup();reject(new Error('שגיאת רשת בטעינת הגיליון'))};
+    document.head.appendChild(s);
+  });
+}
+const ASSIGN_SHEET='שיבוץ קורסים';   // לשונית שנוצרת מלוח השיבוץ במערכת הניהול (כפתור "📋 העתקה לגיליון")
+function jsonpTableByName(sheetName){
+  return new Promise((resolve,reject)=>{
+    const cb='chemedCatCB'+(__jsonpN++)+'_'+Date.now();
+    const timer=setTimeout(()=>{cleanup();reject(new Error('פסק זמן בתגובה מגוגל'))},15000);
+    function cleanup(){try{delete window[cb]}catch(e){window[cb]=undefined}
+      const el=document.getElementById(cb); if(el)el.remove(); clearTimeout(timer);}
+    window[cb]=function(resp){cleanup();
+      if(!resp||resp.status==='error'){reject(new Error('שגיאה בקריאת לשונית השיבוץ'));return;}
+      resolve(resp.table);};
+    let src='https://docs.google.com/spreadsheets/d/'+FILE_ID+'/gviz/tq?sheet='+encodeURIComponent(sheetName)+
+      '&headers=1&tqx=out:json;responseHandler:'+cb;
+    const s=document.createElement('script'); s.id=cb; s.src=src;
+    s.onerror=()=>{cleanup();reject(new Error('שגיאת רשת בטעינת לשונית השיבוץ'))};
+    document.head.appendChild(s);
+  });
+}
+const REG_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxL5hDOZQmPwE2z-l03ZMjqD2aer3aw6xm-hpY3ppbhtKkvLUjoRbbwlfvZQTVVGlCC/exec';
+/* קריאה בטוחה (JSONP) אל doGet של אפליקציית ה-Apps Script — לבדיקת הרשמה כפולה
+   ולספירת נרשמים. לא נחשפים כאן שום פרטים אישיים, רק תשובה מצומצמת (found/course
+   או מונה למקום). ר' ההערה על doGet ב-apps-script-מעודכן.gs. */
+function jsonpGet(params){
+  return new Promise((resolve,reject)=>{
+    const cb='chemedRegCB'+(__jsonpN++)+'_'+Date.now();
+    const timer=setTimeout(()=>{cleanup();reject(new Error('פסק זמן בתגובה מהשרת'))},15000);
+    function cleanup(){try{delete window[cb]}catch(e){window[cb]=undefined}
+      const el=document.getElementById(cb); if(el)el.remove(); clearTimeout(timer);}
+    window[cb]=function(resp){cleanup();resolve(resp);};
+    const qs=Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
+    const s=document.createElement('script'); s.id=cb;
+    s.src=REG_SCRIPT_URL+'?callback='+cb+'&'+qs;
+    s.onerror=()=>{cleanup();reject(new Error('שגיאת רשת בפנייה לשרת ההרשמות'))};
+    document.head.appendChild(s);
+  });
+}
+let COURSE_COUNTS={};
+async function loadCourseCounts_(){
+  try{
+    const resp=await jsonpGet({action:'courseCounts'});
+    if(resp && !resp.error) COURSE_COUNTS=resp;
+  }catch(e){ /* לא קריטי — אם זה נכשל פשוט לא נציג "נשארו X מקומות" */ }
+}
+function cellVal(c){if(!c)return ''; if(c.f!=null)return String(c.f); if(c.v==null)return ''; return String(c.v);}
+function tableRows(table){
+  const head=((table&&table.cols)||[]).map(c=>c.label||'');
+  const data=((table&&table.rows)||[]).map(r=>(r.c||[]).map(cellVal));
+  return [head,...data];
+}
+
+function rowsToCourses(rows){
+  const h=rows[0]; if(!h) return [];
+  const iN=col(h,...MAP.name), iD=col(h,...MAP.domain), iA=col(h,...MAP.audience),
+        iT=col(h,...MAP.track), iTe=col(h,...MAP.teacher), iS=col(h,...MAP.school),
+        iC=col(h,...MAP.cap), iSt=col(h,...MAP.status), iDs=col(h,...MAP.desc),
+        iIm=col(h,...MAP.image), iPr=col(h,...MAP.prompt),
+        iPl=col(h,...MAP.presentationLink), iVl=col(h,...MAP.videoLink), iSy=col(h,...MAP.syllabusLink);
+  return rows.slice(1).filter(r=>r[iN]).map(r=>({
+    name:cellClean(r[iN]), domain:iD>=0?cellClean(r[iD]):'', audience:iA>=0?cellClean(r[iA]):'',
+    track:iT>=0?cellClean(r[iT]):'', teacher:iTe>=0?cellClean(r[iTe]):'', school:iS>=0?cellClean(r[iS]):'',
+    cap:iC>=0?(parseInt((r[iC]||'').replace(/[^\d]/g,''))||0):0, status:iSt>=0?cellClean(r[iSt]):'',
+    desc:iDs>=0?cellClean(r[iDs]):'', image:iIm>=0?cellClean(r[iIm]):'', prompt:iPr>=0?cellClean(r[iPr]):'',
+    presentationLink:iPl>=0?cellClean(r[iPl]):'', videoLink:iVl>=0?cellClean(r[iVl]):'',
+    syllabusLink:iSy>=0?cellClean(r[iSy]):''
+  }));
+}
+
+/* שילוב לשונית "שיבוץ קורסים" (מיוצאת מלוח השיבוץ במערכת הניהול) — היא הסמכות
+   הבלעדית לגבי אילו קורסים בכלל מוצגים, ומה הרצועה/בית ספר/מתחם/מורה/סטטוס
+   הסופיים שלהם — כי שם נעשה השיבוץ בפועל, ולא בעמודות (לרוב ריקות/לא מעודכנות)
+   בלשונית "קורסים תשפ"ז". קורס שהוסר/הוסתר בלוח השיבוץ ונשלח סנכרון פשוט לא
+   יופיע יותר בלשונית הזו — ולכן גם לא בקטלוג הציבורי, גם אם ברשומה הבסיסית
+   שלו עדיין רשום סטטוס "מאושר".
+   אם הלשונית "שיבוץ קורסים" עוד לא נוצרה/ריקה (טרם בוצע סנכרון אף פעם) —
+   חוזרים למקור הישן: כל הרשומות מלשונית "קורסים תשפ"ז" לפי הסטטוס שלהן שם,
+   כדי שהקטלוג לא יישאר ריק לפני שהופעל הסנכרון בפעם הראשונה. */
+async function mergeAssignments(raw){
+  const table=await jsonpTableByName(ASSIGN_SHEET);
+  const rows=tableRows(table);
+  if(rows.length<2) return {list:raw, authoritative:false};
+  const h=rows[0];
+  const iN=col(h,'שם הקורס'), iA=col(h,'מתחם'), iT=col(h,'רצועה'),
+        iTe=col(h,'מורה'), iS=col(h,'בית ספר'), iSt=col(h,'סטטוס');
+  const byName={}; raw.forEach(c=>{ byName[c.name]=c; });
+  /* חשוב: "שם הקורס" יכול לחזור על עצמו כמה פעמים בלוח השיבוץ — כמה קבוצות
+     מקבילות של אותו קורס/מחזור, בו-זמנית, ברצועות/בתי ספר שונים (למשל אותו
+     "מחזור א'" רץ גם ברצועה 2 וגם ברצועה 3 עבור בתי ספר שונים). כל שורה
+     היא מופע (instance) נפרד עם רצועה/בית ספר/מגדר משלו — ולכן לא ממזגים
+     לפי שם לתוך מפתח יחיד (זה היה מוחק מופעים ומשאיר רק את האחרון), אלא
+     שומרים את כולם כרשימת מופעים. האיחוד לכרטיס תצוגה אחד קורה בהמשך,
+     בנפרד לכל בית ספר שנבחר (ר' renderGrid/buildCourseSelect). */
+  const merged=rows.slice(1).map(r=>{
+    const n=cellClean(r[iN]); if(!n) return null;
+    const base=byName[n];
+    return {...(base||{name:n,domain:'',audience:'',track:'',teacher:'',school:'',
+      cap:0,status:'',desc:'',image:'',prompt:'',presentationLink:'',videoLink:'',syllabusLink:''}),
+      name:n,
+      audience:(iA>=0?cellClean(r[iA]):'')||(base&&base.audience)||'',
+      track:(iT>=0?cellClean(r[iT]):'')||(base&&base.track)||'',
+      teacher:(iTe>=0?cellClean(r[iTe]):'')||(base&&base.teacher)||'',
+      school:(iS>=0?cellClean(r[iS]):'')||(base&&base.school)||'',
+      status:(iSt>=0?cellClean(r[iSt]):'')};
+  }).filter(Boolean);
+  return {list:merged, authoritative:true};
+}
+
+/* איחוד מספר מופעים (instances) של אותו קורס לכרטיס תצוגה אחד — נקרא רק
+   על הרשימה שכבר עברה סינון לפי בית ספר, כדי שהכרטיס המאוחד תמיד ישקף
+   מופע שבאמת רלוונטי לבית הספר שנבחר. */
+function dedupe(list){
+  const seen=new Map();
+  list.forEach(c=>{
+    const k=baseName(c.name);
+    if(!seen.has(k)) seen.set(k,{...c,name:k,cycles:0});
+    const e=seen.get(k); e.cycles++;
+    if(!e.image && c.image) e.image=c.image;
+    if(!e.desc && c.desc) e.desc=c.desc;
+    if(!e.prompt && c.prompt) e.prompt=c.prompt;
+    if(!e.presentationLink && c.presentationLink) e.presentationLink=c.presentationLink;
+    if(!e.videoLink && c.videoLink) e.videoLink=c.videoLink;
+  });
+  return [...seen.values()];
+}
+
+/* כל מופעי הקורסים המאושרים (עוד לפני איחוד לכרטיסים) — הסינון לפי בית
+   ספר קורה על הרשימה הזו (כל מופע עם הרצועה/מגדר/בית-ספר האמיתיים שלו),
+   ורק אחרי הסינון מאחדים לכרטיסי תצוגה (ר' renderGrid). */
+let ALL_INSTANCES=[];
+let COURSES=[];
+function finalizeCourses(raw){
+  ALL_INSTANCES=raw.filter(c=>/מאושר/.test(c.status||''));
+}
+function withKnownDesc(c){
+  const known=KNOWN_DESC[c.name]||{};
+  return {...c, desc:c.desc||known.d||'', tags:known.tags||[]};
+}
+
+let SCHOOLS=[];
+async function loadSchools(){
+  try{
+    const table=await jsonpTable(MASTER_GID);
+    const rows=tableRows(table);
+    const names=rows.slice(1).map(r=>cellClean(r[0])).filter(Boolean);
+    SCHOOLS=[...new Set(names)].sort((a,b)=>a.localeCompare(b,'he'));
+    if(!SCHOOLS.length) throw new Error('empty');
+  }catch(e){
+    console.warn('schools load failed',e);
+    SCHOOLS=SNAPSHOT_SCHOOLS.slice().sort((a,b)=>a.localeCompare(b,'he'));
+  }
+}
+
+/* לשונית "שיבוץ בתי ספר" (מיוצאת מלוח השיבוץ במערכת הניהול, אותו כפתור
+   סנכרון) — מכילה לכל בית ספר את הרצועות שהוא רשום אליהן ואת המגדר שלו,
+   מחושבים במערכת הניהול (עם כל התאמות השמות/הפיצול שכבר קיימות שם).
+   בעזרת זה אפשר לדעת אילו קורסים רלוונטיים לבית ספר שנבחר. אם הלשונית
+   עוד לא קיימת/ריקה (טרם בוצע סנכרון) — פשוט לא מסננים לפי רצועה/מגדר,
+   ומציגים לבית הספר הנבחר את כל הקורסים (לא חוסם כלום). */
+const SCHOOLS_SHEET='שיבוץ בתי ספר';
+let SCHOOL_INFO={};
+async function loadSchoolInfo(){
+  try{
+    const table=await jsonpTableByName(SCHOOLS_SHEET);
+    const rows=tableRows(table);
+    if(rows.length<2) return;
+    const h=rows[0];
+    const iN=col(h,'שם בית ספר'), iG=col(h,'מגדר'), iR=col(h,'רצועות');
+    const info={};
+    rows.slice(1).forEach(r=>{
+      const n=cellClean(r[iN]); if(!n) return;
+      info[n]={gender:iG>=0?cellClean(r[iG]):'', slots:iR>=0?cellClean(r[iR]).split(',').map(x=>x.trim()).filter(Boolean):[]};
+    });
+    SCHOOL_INFO=info;
+  }catch(e){ console.warn('שיוך בתי ספר לרצועות נכשל — לא נסנן קורסים לפי רצועה/מגדר',e); }
+}
+/* השם שנבחר בבורר (מ"מאסטר מוסדות") לפעמים כולל סיומת בסוגריים ("(ע"ש...)")
+   שאינה קיימת בשם שנכתב בלשונית "שיבוץ בתי ספר" (או להפך) — למשל
+   "אולפנית שח"ם (ע"ש חיים משה שפירא)" מול "אולפנית שח"ם" בלבד. השוואה
+   מדויקת (===) בלבד הייתה מפילה את ההתאמה ומציגה "אין נתוני שיבוץ" בטעות,
+   למרות שהשורה קיימת. findSchoolInfo מנסה קודם התאמה מדויקת, ואם נכשלה —
+   משווה אחרי הסרת הסיומת בסוגריים משני הצדדים. */
+function normSchoolKey_(n){ return (n||'').replace(/\s*\([^)]*\)\s*$/,'').trim(); }
+function findSchoolInfo_(name){
+  if(SCHOOL_INFO[name]) return SCHOOL_INFO[name];
+  const norm=normSchoolKey_(name);
+  if(SCHOOL_INFO[norm]) return SCHOOL_INFO[norm];
+  const key=Object.keys(SCHOOL_INFO).find(k=>normSchoolKey_(k)===norm);
+  return key?SCHOOL_INFO[key]:undefined;
+}
+/* האם קורס מסוים רלוונטי לבית ספר נתון.
+   14.9.2026 — תוקן: בית ספר "מעורב" (כמו יש"י) לא אמור להציג גם קורסי
+   בנים וגם קורסי בנות לאותו תלמיד/ה — הוא רק אומר שבבית הספר יש שתי
+   האוכלוסיות. לכן לבתי ספר מעורבים שואלים בנפרד "בן או בת" (state.gender,
+   נבחר בפופ-אפ/בשורת הסינון) ומסננים לפי זה בדיוק כמו בית ספר לא-מעורב. */
+function schoolAllows(c,schoolName){
+  if(!schoolName) return false;
+  if(c.school) return c.school===schoolName;   // קורס נעול לבית ספר ספציפי
+  const info=findSchoolInfo_(schoolName);
+  /* סינון מחמיר (לפי בקשת שירה): אם אין לבית הספר שורה בלשונית "שיבוץ בתי
+     ספר", או שיש שורה אך בלי אף רצועה מוגדרת — לא מוצג אף קורס, במקום
+     להציג הכול. זה חושף בעיות שיבוץ/סנכרון במקום להסתיר אותן בשקט. */
+  if(!info || !info.slots.length) return false;
+  const tk=trackKeyOf(c.track);
+  if(tk && !info.slots.includes(tk)) return false;
+  const effGender=info.gender==='מעורב'?(state.gender||''):info.gender;
+  if(c.audience && effGender && c.audience!==effGender) return false;
+  return true;
+}
+/* האם בית הספר הנבחר "מעורב" וטרם נבחר מגדר — כלומר עדיין חסר מידע כדי
+   לדעת אילו קורסים באמת רלוונטיים */
+function schoolNeedsGender_(schoolName){
+  const info=findSchoolInfo_(schoolName);
+  return !!(info && info.gender==='מעורב');
+}
+/* טקסט תצוגה ליד "איפוס סינון": מסביר לפי מה מסונן, או מזהיר אם חסר שיבוץ */
+function schoolTrackLabel_(schoolName){
+  if(!schoolName) return '';
+  const info=findSchoolInfo_(schoolName);
+  if(!info || !info.slots.length){
+    return '⚠️ אין נתוני שיבוץ עבור בית ספר זה — לא מוצג אף קורס עד שיושלם השיבוץ בלוח הניהול.';
+  }
+  const labels=info.slots.map(k=>{const s=SLOTS.find(x=>x.key===k);return s?s.label+' ('+s.time+')':k;}).join(', ');
+  if(info.gender==='מעורב' && !state.gender){
+    return '⚠️ בית ספר מעורב — יש לבחור למעלה "בן" או "בת" כדי לראות את הקורסים הרלוונטיים.';
+  }
+  return 'משויך ל: '+labels+(info.gender?' · '+(info.gender==='מעורב'?state.gender:info.gender):'');
+}
+
+async function boot(){
+  if(ARTIFACT_MODE){
+    finalizeCourses(SNAPSHOT); SCHOOLS=SNAPSHOT_SCHOOLS.slice().sort((a,b)=>a.localeCompare(b,'he'));
+    afterLoad('צילום מצב מ-'+SNAP_AT+' (דף מתארח — ללא חיבור חי לגיליון)'); return;
+  }
+  loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} }); // לא חוסם את הטעינה הראשית
+  await loadSchools();
+  try{ await loadSchoolInfo(); }catch(e){ console.warn('loadSchoolInfo failed',e); }
+  try{
+    const table=await jsonpTableByName(COURSES_SHEET);
+    const rows=tableRows(table);
+    if(rows.length<2) throw new Error('לשונית ריקה');
+    let raw=rowsToCourses(rows);
+    try{
+      const res=await mergeAssignments(raw);
+      if(res.authoritative) raw=res.list;
+    }catch(e){ console.warn('שילוב לשונית השיבוץ נכשל — ממשיכים לפי לשונית הקורסים בלבד',e); }
+    finalizeCourses(raw);
+    afterLoad('מסונכרן מגיליון הקורסים · '+new Date().toLocaleDateString('he-IL'));
+  }catch(e){
+    console.warn('live load failed',e);
+    finalizeCourses(SNAPSHOT);
+    afterLoad('לא הצלחתי להתחבר לגיליון כרגע — מוצג צילום מצב מ-'+SNAP_AT+'.');
+  }
+}
+function afterLoad(note){
+  document.getElementById('srcNote').textContent=note;
+  buildFilters(); refreshSchoolGate(); renderGrid();
+}
+
+/* ---------- סינון ---------- */
+/* אין יותר בורר "רצועות" עצמאי — הסינון היחיד הוא לפי בית ספר; הרצועה/מגדר
+   המשויכים לבית הספר שנבחר מוצגים כתצוגה בלבד (schoolTrackLabel_), לא כבחירה. */
+let state={school:'',gender:''};
+function buildFilters(){
+  /* בית הספר שלי — רשימה נפתחת מלאה ממאסטר המוסדות, גם בשורת הסינון
+     וגם בפופ-אפ (שני מקומות לאותה בחירה, כפי שביקשה שירה) */
+  const names=SCHOOLS.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  ['fMySchool','fMySchoolPopup'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.innerHTML=el.options[0].outerHTML+names;
+  });
+}
+function matchesFilters(c){
+  if(state.school && !schoolAllows(c,state.school)) return false;
+  return true;
+}
+/* "נשארו X מקומות" — מבוסס על ספירת נרשמים אמיתית (מדולגת על כפילויות
+   לפי ת.ז.) שמגיעה מ-doGet(action=courseCounts), לא רק על המספר הסטטי
+   של המכסה. אם עדיין לא נטענה ספירה (בעליית עמוד) או שלקורס אין מכסה
+   מוגדרת — פשוט לא מציגים תג. */
+function spotsLabel_(c){
+  if(!c.cap) return '';
+  const used=COURSE_COUNTS[c.name]||0;
+  const left=c.cap-used;
+  if(left<=0) return `<span class="pg-badge" style="background:#fee2e2;color:#b91c1c">מלא</span>`;
+  if(left<=3) return `<span class="pg-badge" style="background:#fef3c7;color:#92400e">נשארו ${left} מקומות</span>`;
+  return `<span class="pg-badge ghost">נשארו ${left} מקומות</span>`;
+}
+function renderGrid(){
+  /* מסננים לפי בית ספר על רשימת המופעים הגולמית (כל מופע עם הרצועה/מגדר
+     האמיתיים שלו), ורק אז מאחדים לכרטיסי תצוגה — כך שקורס שרץ כקבוצה
+     נפרדת בכמה רצועות שונות מוצג נכון לכל בית ספר לפי הקבוצה הרלוונטית
+     לו, ולא "נבלע" ע"י מופע אחר של אותו שם. */
+  const passing=ALL_INSTANCES.filter(matchesFilters);
+  COURSES=dedupe(passing).map(withKnownDesc).sort((a,b)=>a.name.localeCompare(b.name,'he'));
+  const list=COURSES;
+  const grid=document.getElementById('grid');
+  document.getElementById('resCount').textContent=list.length+' קורסים';
+  document.getElementById('emptyMsg').style.display=list.length?'none':'block';
+  grid.innerHTML=list.map((c,i)=>{
+    const idx=COURSES.indexOf(c);
+    const img=fixImg(c.image);
+    const thumb=img?`<img class="thumb" src="${esc(img)}" alt="${esc(c.name)}" loading="lazy">`
+      :`<div class="thumb ph" style="background:${domainGrad(c.domain)}">${domainIcon(c.domain)}</div>`;
+    return `<article class="pg-card" data-idx="${idx}" tabindex="0" role="button" aria-label="${esc(c.name)}">
+      ${thumb}
+      <div class="body">
+        <div class="pg-badges">
+          ${c.domain?`<span class="pg-badge teal">${esc(c.domain)}</span>`:''}
+          ${c.audience?`<span class="pg-badge ghost">${esc(c.audience)}</span>`:''}
+          ${c.cycles>1?`<span class="pg-badge orange">${c.cycles} מחזורים</span>`:''}
+          ${spotsLabel_(c)}
+        </div>
+        <h3>${esc(c.name)}</h3>
+        <div class="pg-meta">${esc(c.teacher||'')}${c.track?' · '+esc(trackLabel(c.track)):''}</div>
+        ${c.desc?`<div class="pg-desc">${esc(c.desc)}</div>`:''}
+        <button class="pg-btn pg-btn--teal" type="button">לפרטים נוספים ←</button>
+      </div>
+    </article>`;
+  }).join('');
+  grid.querySelectorAll('.pg-card').forEach(el=>{
+    el.addEventListener('click',()=>requestOpen(+el.dataset.idx,el));
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();requestOpen(+el.dataset.idx,el);}});
+  });
+}
+
+/* ---------- שער "בחרו בית ספר" — פופ-אפ שקופץ בניסיון לפתוח/לבחור קורס
+   בלי בית ספר נבחר, ולא חוסם את הצפייה בגריד עצמו (רואים את כל הקורסים
+   תמיד; הבחירה נדרשת רק כדי לפתוח קורס ספציפי/להירשם) ---------- */
+let pendingIdx=null, pendingTrigger=null;
+function requestOpen(idx,triggerEl){
+  if(!state.school || (schoolNeedsGender_(state.school) && !state.gender)){
+    pendingIdx=idx; pendingTrigger=triggerEl||null; openGatePopup(); return;
+  }
+  openModal(idx,triggerEl);
+}
+/* תוקן 16.9.2026 (גרסה שנייה): הניסיון הראשון למקם פופ-אפים לפי גלילת
+   window לא עבד, כי בתוך ה-iframe של Wix window.scrollY תמיד 0 ו-
+   window.innerHeight שווה לגובה כל התוכן (לא רק מה שרואים) — כי Wix
+   בונה את ה-iframe לפי גובה מלא, בלי גלילה פנימית משלו, וה-JS כאן אין
+   לו שום דרך לדעת כמה המשתמשת גללה בעמוד החיצוני של Wix.
+   הפתרון האמיתי: לא מנסים לדעת "מה רואים על המסך" — במקום זה ממקמים
+   כל פופ-אפ נגזר-מלחיצה (מודל פרטי קורס / טופס הרשמה) בדיוק ליד
+   האלמנט שעליו ממש לחצו כרגע (getBoundingClientRect שלו, שכן משמעותי
+   בתוך אותו מסמך). זה מובטח להיות באזור הנראה, כי המשתמשת הרגע לחצה
+   על האלמנט הזה. פופ-אפ בחירת בית הספר נשאר sticky (זה כבר עובד, כי
+   הטריגר שלו — כניסת העכבר לעמוד — קורה תמיד ליד תחילת התוכן). */
+function applyFixedMode_(){
+  /* יש גלילה פנימית ב-iframe (גובה ה-embed ב-Wix קטן מהתוכן) → אפשר למרכז עם fixed */
+  const inner=document.documentElement.scrollHeight>window.innerHeight+40;
+  document.documentElement.classList.toggle('pg-fixedmode',inner);
+  return inner;
+}
+function positionNearTrigger_(wrapEl,triggerEl){
+  if(applyFixedMode_()){ wrapEl.style.top=''; return; }
+  if(!triggerEl){ wrapEl.style.top='24px'; return; }
+  const rect=triggerEl.getBoundingClientRect();
+  const scrollY=window.scrollY||window.pageYOffset||0;
+  wrapEl.style.top=Math.max(0,rect.top+scrollY-16)+'px';
+}
+/* פופ-אפ בחירת בית הספר ממוקם ב-HTML ממש בראש התוכן (position:sticky),
+   לכן אין צורך בחישוב מיקום ב-JS כמו pinOverlay_ — הוא תמיד "יושב" למעלה. */
+function openGatePopup(){
+  applyFixedMode_();
+  document.getElementById('gatePopupWrap').classList.add('on');
+  document.getElementById('gatePopupOverlay').classList.add('on');
+}
+function closeGatePopup(){
+  document.getElementById('gatePopupWrap').classList.remove('on');
+  document.getElementById('gatePopupOverlay').classList.remove('on');
+}
+/* פופ-אפ טופס ההרשמה — נפתח מכפתור "מעוניינים" בחלון פרטי הקורס, עם שם
+   הקורס ממולא מראש בשדה "קורס מבוקש". */
+function openRegPopup(courseName,triggerEl){
+  const wrap=document.getElementById('regPopupWrap');
+  wrap.classList.add('on');
+  document.getElementById('regPopupOverlay').classList.add('on');
+  positionNearTrigger_(wrap,triggerEl);
+  /* בכל פתיחה חדשה מציגים מחדש את הטופס (לא את מסך ההצלחה שאולי נשאר
+     מפעם קודמת) — כדי שאפשר יהיה להירשם שוב לקורס נוסף */
+  document.getElementById('regFormArea').style.display='';
+  document.getElementById('regSuccessArea').style.display='none';
+  if(courseName!=null){
+    const sel=document.getElementById('fCourse');
+    if(sel) sel.value=courseName;
+  }
+}
+function closeRegPopup(){
+  document.getElementById('regPopupWrap').classList.remove('on');
+  document.getElementById('regPopupOverlay').classList.remove('on');
+}
+
+/* ---------- מודל פרטים ---------- */
+function openModal(idx,triggerEl){
+  const c=COURSES[idx]; if(!c) return;
+  const img=fixImg(c.image);
+  const body=document.getElementById('modalBody');
+  body.innerHTML=`
+    <button class="pg-mclose" id="mClose" aria-label="סגירה">✕</button>
+    ${img?`<img src="${esc(img)}" alt="${esc(c.name)}">`
+      :`<div class="thumb ph" style="background:${domainGrad(c.domain)};aspect-ratio:3/1;max-height:160px">${domainIcon(c.domain)}</div>`}
+    <div class="mbody">
+      <div class="pg-badges" style="margin-bottom:.6rem">
+        ${c.domain?`<span class="pg-badge teal">${esc(c.domain)}</span>`:''}
+        ${c.audience?`<span class="pg-badge ghost">${esc(c.audience)}</span>`:''}
+        ${(c.tags||[]).map(t=>`<span class="pg-badge ghost">${esc(t)}</span>`).join('')}
+      </div>
+      <h2>${esc(c.name)}</h2>
+      ${(()=>{
+        const yt=youtubeEmbed_(c.videoLink), dv=driveEmbed_(c.presentationLink);
+        let out='';
+        if(yt) out+=`<div class="pg-embed"><iframe src="${esc(yt)}" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+        if(dv) out+=`<div class="pg-embed"><iframe src="${esc(dv)}" allow="autoplay" allowfullscreen loading="lazy"></iframe></div>`;
+        const links=[];
+        if(c.presentationLink) links.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.presentationLink)}" target="_blank" rel="noopener">📊 ${dv?'פתיחת המצגת בחלון נפרד':'למצגת'}</a>`);
+        if(c.videoLink) links.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.videoLink)}" target="_blank" rel="noopener">🎬 ${yt?'פתיחת הסרטון בחלון נפרד':'לסרטון'}</a>`);
+        if(c.syllabusLink) links.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.syllabusLink)}" target="_blank" rel="noopener">📄 לסילבוס</a>`);
+        if(links.length) out+=`<div class="pg-btn-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:.6rem">${links.join('')}</div>`;
+        return out;
+      })()}
+      <p>${esc(c.desc)||'תיאור הקורס יעודכן בקרוב.'}</p>
+      <dl class="pg-dl">
+        <dt>מורה</dt><dd>${esc(c.teacher)||'—'}</dd>
+      </dl>
+      <div class="pg-btn-row" style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="button" class="pg-btn pg-btn--primary" id="mReg">להרשמה לקורס זה</button>
+      </div>
+    </div>`;
+  {
+    const wrap=document.getElementById('modalWrap');
+    wrap.classList.add('on');
+    document.getElementById('modalOverlay').classList.add('on');
+    positionNearTrigger_(wrap,triggerEl);
+  }
+  document.getElementById('mClose').onclick=closeModal;
+  document.getElementById('mReg').onclick=(e)=>{
+    const rect=e.currentTarget.getBoundingClientRect();
+    const fakeTrigger={getBoundingClientRect:()=>rect}; // המיקום נלכד לפני שהמודל נסגר ומוחק את הכפתור
+    closeModal();
+    openRegPopup(c.name,fakeTrigger);
+  };
+  document.getElementById('mClose').focus();
+}
+function closeModal(){
+  document.getElementById('modalWrap').classList.remove('on');
+  document.getElementById('modalOverlay').classList.remove('on');
+}
+document.getElementById('modalOverlay').onclick=closeModal;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeGatePopup();closeRegPopup();}});
+
+/* רשימת הקורסים בטופס ההרשמה מוגבלת לקורסים הרלוונטיים לבית הספר שנבחר —
+   כדי שלא ניתן יהיה לבחור קורס של בית ספר/רצועה אחרים */
+function buildCourseSelect(){
+  const sel=document.getElementById('fCourse');
+  /* מחושב ישירות מ-ALL_INSTANCES (לא מ-COURSES הגלובלי), כי הפונקציה הזו
+     נקראת מ-refreshSchoolGate עוד לפני שרender Grid מעדכן את COURSES
+     לבית הספר הנוכחי — כך שהרשימה תמיד עדכנית לבית הספר שזה עתה נבחר. */
+  const list=state.school?dedupe(ALL_INSTANCES.filter(c=>schoolAllows(c,state.school))):[];
+  sel.innerHTML='<option value="">בחרו קורס</option>'+
+    list.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+}
+/* נעילת/פתיחת טופס ההרשמה לפי אם נבחר בית ספר, עדכון פס "בית ספר: X" ושדה
+   שם בית הספר בטופס כך שתמיד תואם את מה שנבחר — אי אפשר לבחור קורס בלי
+   לבחור קודם בית ספר */
+function refreshSchoolGate(){
+  const needsGender=state.school && schoolNeedsGender_(state.school);
+  const on=!!state.school && (!needsGender || !!state.gender);
+  document.getElementById('formGate').classList.toggle('locked',!on);
+  document.getElementById('formGateNote').classList.toggle('show',!on);
+  document.getElementById('fSchoolName').value=state.school||'';
+  ['fMySchool','fMySchoolPopup'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value=state.school||'';
+  });
+  ['fMyGender','fMyGenderPopup'].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    el.style.display=needsGender?'':'none';
+    el.value=state.gender||'';
+  });
+  const note=document.getElementById('schoolTrackNote');
+  if(note) note.textContent=schoolTrackLabel_(state.school);
+  buildCourseSelect();
+}
+
+/* ---------- חיווט בקרות ---------- */
+/* בחירת בית ספר אפשרית משני מקומות — הבורר הקבוע בשורת הסינון, וגם
+   הפופ-אפ שקופץ בניסיון לפתוח קורס בלי בית ספר נבחר — שניהם עוברים
+   דרך אותה פונקציה כדי שיישארו מסונכרנים. הרצועה/מגדר נקבעים אוטומטית
+   לפי בית הספר (schoolAllows), ומוצגים כטקסט בלבד (schoolTrackLabel_) —
+   אין יותר בורר רצועה נפרד לבחירה ידנית. */
+function selectSchool(name){
+  if(name!==state.school) state.gender='';
+  state.school=name;
+  refreshSchoolGate(); renderGrid();
+  if(!state.school) return;
+  /* בית ספר מעורב — לפני שסוגרים את הפופ-אפ ופותחים קורס ממתין, צריך
+     קודם לדעת "בן או בת" (מוצג בפופ-אפ עצמו, ר' selectGender) */
+  if(schoolNeedsGender_(state.school) && !state.gender) return;
+  closeGatePopup();
+  if(pendingIdx!=null){
+    const idx=pendingIdx, trig=pendingTrigger; pendingIdx=null; pendingTrigger=null;
+    const c=COURSES[idx];
+    if(c && matchesFilters(c)) openModal(idx,trig);
+  }
+}
+function selectGender(g){
+  state.gender=g;
+  refreshSchoolGate(); renderGrid();
+  if(!state.gender) return;
+  closeGatePopup();
+  if(pendingIdx!=null){
+    const idx=pendingIdx, trig=pendingTrigger; pendingIdx=null; pendingTrigger=null;
+    const c=COURSES[idx];
+    if(c && matchesFilters(c)) openModal(idx,trig);
+  }
+}
+document.getElementById('fMySchool').addEventListener('change',e=>selectSchool(e.target.value));
+document.getElementById('fMySchoolPopup').addEventListener('change',e=>selectSchool(e.target.value));
+document.getElementById('fMyGender').addEventListener('change',e=>selectGender(e.target.value));
+document.getElementById('fMyGenderPopup').addEventListener('change',e=>selectGender(e.target.value));
+document.getElementById('gatePopupClose').addEventListener('click',()=>{ pendingIdx=null; closeGatePopup(); });
+document.getElementById('gatePopupOverlay').addEventListener('click',()=>{ pendingIdx=null; closeGatePopup(); });
+document.getElementById('formGateNote').addEventListener('click',()=>{ pendingIdx=null; openGatePopup(); });
+document.getElementById('regPopupClose').addEventListener('click',closeRegPopup);
+document.getElementById('regPopupOverlay').addEventListener('click',closeRegPopup);
+/* בקשת שירה 16.9.2026: ברגע שהעכבר נכנס לעמוד (לא רק לחיצה על כפתור) —
+   אם עדיין לא נבחר בית ספר, לפתוח מיד את הפופ-אפ לבחירת בית ספר. פועל
+   פעם אחת בלבד (לא נפתח שוב בכל תזוזת עכבר), ומפסיק לגמרי ברגע שנבחר
+   בית ספר — כך שאי אפשר "לתקוע" את המשתמשת עם פופ-אפ חוזר. */
+(function(){
+  let fired=false;
+  function maybeOpenOnHover(){
+    if(fired || state.school) return;
+    fired=true;
+    openGatePopup();
+    document.removeEventListener('mouseenter',maybeOpenOnHover,true);
+    document.removeEventListener('mousemove',maybeOpenOnHover,true);
+  }
+  document.addEventListener('mouseenter',maybeOpenOnHover,true);
+  document.addEventListener('mousemove',maybeOpenOnHover,true);
+})();
+document.getElementById('btnClear').addEventListener('click',()=>{
+  state={school:state.school,gender:state.gender};
+  renderGrid();
+});
+
+/* ---------- טופס הרשמה — שליחה ל-Apps Script דרך iframe נסתר (בלי CORS) ----------
+   לפני שליחה בפועל בודקים (JSONP, action=checkId) האם ת.ז. זו כבר רשומה לקורס
+   אחר: אם כן — שאלה למשתמשת אם להחליף את ההרשמה הקודמת (cancelPrevious=1);
+   אם זו אותה הרשמה בדיוק — חוסמים ומתריעים בלי לשלוח שוב. אם הבדיקה עצמה
+   נכשלת (בעיית רשת וכו') — לא חוסמים את ההרשמה, רק ממשיכים בלי הבדיקה. */
+document.getElementById('regForm').addEventListener('submit',async function(e){
+  const action=this.getAttribute('action');
+  if(!action || action.indexOf('APPS_SCRIPT_URL')>=0){
+    console.warn('טופס ההרשמה עדיין לא מחובר ל-Apps Script — ראו apps-script.gs');
+    return;
+  }
+  if(this.dataset.bypassCheck==='1'){ this.dataset.bypassCheck=''; return; } // כבר נבדק — לתת לשליחה להמשיך כרגיל
+  e.preventDefault();
+  const idNumber=document.getElementById('fIdNumber').value.trim();
+  const courseName=document.getElementById('fCourse').value;
+  const dupMsg=document.getElementById('dupMsg');
+  const submitBtn=document.getElementById('regSubmitBtn');
+  const checkNote=document.getElementById('checkingNote');
+  dupMsg.style.display='none';
+  if(!this.reportValidity()) return; // כולל בדיקת "חובה" על כל השדות
+  /* בקשת שירה 17.9.2026: מייל ההורה לא יכול להיות זהה למייל התלמיד —
+     אחרת לא ניתן לתקשר עם ההורים בנפרד */
+  const studentEmail=document.getElementById('fEmail').value.trim().toLowerCase();
+  const parentEmail=document.getElementById('fParentEmail').value.trim().toLowerCase();
+  if(studentEmail && parentEmail && studentEmail===parentEmail){
+    dupMsg.textContent='אימייל ההורה זהה לאימייל התלמיד/ה — נא להזין כתובת מייל אחרת עבור ההורה, כדי שנוכל לתקשר איתו/ה בנפרד.';
+    dupMsg.style.display='block';
+    document.getElementById('fParentEmail').focus();
+    return;
+  }
+  submitBtn.disabled=true; submitBtn.textContent='בודק…';
+  checkNote.style.display='block';
+  try{
+    const resp=await jsonpGet({action:'checkId',idNumber});
+    if(resp && resp.found){
+      if(resp.course && resp.course===courseName){
+        dupMsg.textContent='כבר יש הרשמה קיימת עם תעודת הזהות הזו לקורס הזה בדיוק.';
+        dupMsg.style.display='block';
+        submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←'; checkNote.style.display='none';
+        return;
+      }
+      const ok=confirm('נמצאה הרשמה קודמת עם תעודת הזהות הזו לקורס "'+(resp.course||'')+'".\nלבטל את ההרשמה הקודמת ולהחליף אותה בהרשמה הנוכחית?');
+      if(!ok){
+        submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←'; checkNote.style.display='none';
+        return;
+      }
+      document.getElementById('fCancelPrevious').value='1';
+    }
+  }catch(err){
+    console.warn('בדיקת הרשמה כפולה נכשלה — ממשיכים בלי הבדיקה',err);
+  }
+  submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←';
+  this.dataset.bypassCheck='1';
+  this.submit();
+});
+document.getElementById('hidden_iframe').addEventListener('load',function(){
+  if(!this.dataset.first){this.dataset.first='1';return;} // ה-load הראשון הוא טעינת ה-iframe הריק עצמו
+  /* בקשת שירה 17.9.2026: אחרי שליחה מוצלחת הטופס "נסגר" (מוסתר) ובמקומו
+     מוצגת בתוך אותו פופ-אפ (כבר ממוקם נכון על המסך) הודעת הצלחה במרכז. */
+  document.getElementById('regForm').reset();
+  document.getElementById('fCancelPrevious').value='';
+  document.getElementById('dupMsg').style.display='none';
+  document.getElementById('checkingNote').style.display='none';
+  document.getElementById('regFormArea').style.display='none';
+  document.getElementById('regSuccessArea').style.display='block';
+  loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} }); // לרענן "נשארו X מקומות" אחרי הרשמה חדשה
+});
+document.getElementById('regSuccessClose').addEventListener('click',closeRegPopup);
+
+boot();
+</script>
+
+</div>
+
+</body>
+</html>
