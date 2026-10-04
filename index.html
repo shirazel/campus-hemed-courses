@@ -6,46 +6,6 @@
 <title>קטלוג קורסים והרשמה — קמפוס חמ"ד</title>
 </head>
 <body style="margin:0">
-<style>
-html.pg-locked body>div[dir="rtl"]{display:none}
-#pgGate{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#EAF4FA,#fff);font-family:'Assistant','Rubik',Arial,sans-serif;direction:rtl}
-html.pg-locked #pgGate{display:flex}
-#pgGate form{background:#fff;border-radius:24px;padding:34px 30px;width:min(92vw,360px);text-align:center;
-  box-shadow:0 2px 8px rgba(27,94,140,.08),0 12px 32px rgba(27,94,140,.1)}
-#pgGate h1{margin:0 0 6px;font-size:1.4rem;color:#22303D}
-#pgGate p{margin:0 0 18px;color:#67737D}
-#pgGate input{width:100%;box-sizing:border-box;padding:.75rem 1rem;border:2px solid #5CA6D8;border-radius:999px;
-  font-size:1rem;text-align:center;margin-bottom:12px}
-#pgGate button{width:100%;padding:.75rem;border:0;border-radius:999px;background:#FCAE6B;color:#12233A;
-  font-weight:700;font-size:1rem;cursor:pointer}
-#pgGate .err{color:#b91c1c;font-size:.9rem;min-height:1.2em;margin-top:8px}
-</style>
-<div id="pgGate"><form id="pgGateForm">
-  <img src="logo.png" alt="קמפוס חמ&quot;ד" onerror="this.style.display='none'" style="display:block;margin:0 auto 10px;max-width:150px;height:auto">
-  <h1>קמפוס חמ"ד</h1><p>נא להזין סיסמה כדי להיכנס</p>
-  <input type="password" id="pgGatePw" placeholder="סיסמה" autocomplete="off" autofocus>
-  <button type="submit">כניסה</button><div class="err" id="pgGateErr"></div>
-</form></div>
-<script>
-(function(){
-  /* סיסמת כניסה פשוטה (לא אבטחה אמיתית — רק למנוע כניסה מקרית). לא תלוי באותיות גדולות/קטנות ורווחים. */
-  var OK='hemed1234', K='pgGateOk';
-  var norm=function(v){return String(v||'').toLowerCase().replace(/\s+/g,'')};
-  var saved=false; try{ saved=sessionStorage.getItem(K)==='1'; }catch(e){}
-  var root=document.documentElement;
-  if(!saved) root.classList.add('pg-locked');
-  document.getElementById('pgGateForm').addEventListener('submit',function(e){
-    e.preventDefault();
-    if(norm(document.getElementById('pgGatePw').value)===OK){
-      try{ sessionStorage.setItem(K,'1'); }catch(e){}
-      root.classList.remove('pg-locked');
-    }else{
-      document.getElementById('pgGateErr').textContent='סיסמה שגויה, נסו שוב';
-    }
-  });
-})();
-</script>
 <!-- קטלוג קורסים קמפוס חמ"ד — להדבקה ב-Wix HTML iframe/Embed -->
 <!-- תוקן 15.9.2026: שליפת הקורסים עברה מ-gid קבוע (1438764445, שכבר לא קיים)
      לשליפה לפי שם הלשונית ("קורסים תשפ"ז"), כמו שאר הלשוניות בקובץ הזה. -->
@@ -351,6 +311,10 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
           <div class="pg-field">
             <label for="fIdNumber">תעודת זהות התלמיד/ה</label>
             <input type="text" id="fIdNumber" name="תז" required inputmode="numeric" pattern="[0-9]*">
+          </div>
+          <div class="pg-field">
+            <label for="fPw">סיסמת הרשמה (ניתנה לתלמידי הקמפוס)</label>
+            <input type="password" id="fPw" name="pw" required autocomplete="off">
           </div>
           <input type="hidden" id="fCancelPrevious" name="cancelPrevious" value="">
           <div class="pg-btn-row" style="flex-direction:column;align-items:flex-start;gap:8px">
@@ -1110,6 +1074,20 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
   }
   submitBtn.disabled=true; submitBtn.textContent='בודק…';
   checkNote.style.display='block';
+  /* סיסמת הרשמה — נבדקת בשרת (Apps Script), לא בקוד העמוד. השרת בודק אותה
+     שוב גם בשליחה עצמה, כך שאי אפשר להירשם בלי הסיסמה גם דרך קישור ישיר. */
+  try{
+    const pwResp=await jsonpGet({action:'checkPw',pw:document.getElementById('fPw').value});
+    if(pwResp && pwResp.ok===false){
+      dupMsg.textContent='סיסמת ההרשמה שגויה. הסיסמה ניתנה לתלמידי הקמפוס — אפשר לפנות אל הצוות.';
+      dupMsg.style.display='block';
+      submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←'; checkNote.style.display='none';
+      document.getElementById('fPw').focus();
+      return;
+    }
+  }catch(err){
+    console.warn('בדיקת הסיסמה נכשלה — השרת יבדוק אותה שוב בשליחה',err);
+  }
   try{
     const resp=await jsonpGet({action:'checkId',idNumber});
     if(resp && resp.found){
