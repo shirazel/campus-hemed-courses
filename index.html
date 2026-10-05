@@ -234,7 +234,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 
 <section class="pg-hero">
   <div class="pg-wrap">
-    <img src="logo.png" alt="קמפוס חמ&quot;ד" onerror="this.style.display='none'" style="display:block;height:120px;width:auto;margin-bottom:10px">
+    <img id="heroLogo" src="logo.png" alt="קמפוס חמ&quot;ד" onerror="this.style.display='none'" style="display:block;height:120px;width:auto;margin-bottom:10px">
     <h1>קטלוג קורסים תשפ"ז</h1>
   </div>
 </section>
@@ -260,14 +260,6 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
     <div id="emptyMsg" class="pg-empty" style="display:none">לא נמצאו קורסים התואמים את החיפוש.</div>
   </div>
 </section>
-<div class="pg-admin">
-  <button type="button" id="adminToggle" aria-label="ניהול" title="ניהול">🔑</button>
-  <div class="panel" id="adminPanel">
-    <input type="password" id="adminPw" placeholder="קוד ניהול" autocomplete="off">
-    <button type="button" class="pg-btn pg-btn--primary" id="adminGo">אישור</button>
-    <div class="msg" id="adminMsg"></div>
-  </div>
-</div>
 
 <!-- בקשת שירה 16.9.2026: הטופס הועבר מסעיף קבוע בעמוד הכללי לפופ-אפ שנפתח
      רק בלחיצה על "מעוניינים — למילוי פרטים" מתוך חלון פרטי הקורס. אותה
@@ -1179,45 +1171,34 @@ document.getElementById('hidden_iframe').addEventListener('load',function(){
 });
 document.getElementById('regSuccessClose').addEventListener('click',closeRegPopup);
 
-/* ---------- פתיחה/סגירה של ההרשמה — מצב משותף בשרת, נשלט מכפתור הניהול ----------
-   האתר פתוח לצפייה; כפתור ההרשמה נעול עד ששירה מזינה קוד ניהול (נבדק בשרת).
-   בעת טעינה (ובדיקה חוזרת כל דקה) נשאל השרת: {open:true/false}. עד שהתשובה
-   מגיעה — נחשב סגור. */
-let REG_OPEN=false;
+/* ---------- פתיחת ההרשמה ----------
+   האתר פתוח לצפייה, וכפתור ההרשמה נעול כל עוד REGISTRATION_OPEN=false.
+   כדי לפתוח לכולם: משנים את הערך ל-true למטה ועושים Push ב-GitHub Desktop.
+   מצב בדיקה (רק בדפדפן הזה, בלי שרת ובלי סיסמה): לחיצה מהירה 5 פעמים על
+   הלוגו בראש העמוד פותחת/סוגרת את ההרשמה אצל מי שלחץ בלבד. */
+const REGISTRATION_OPEN=false;
+function previewOpen_(){ try{ return localStorage.getItem('pgPreviewOpen')==='1'; }catch(e){ return false; } }
+let REG_OPEN=REGISTRATION_OPEN || previewOpen_();
 function applyRegState_(){
   const b=document.getElementById('mReg');
   if(b){ b.disabled=!REG_OPEN; b.textContent=REG_OPEN?'להרשמה לקורס זה':'ההרשמה תיפתח בקרוב'; }
-  const go=document.getElementById('adminGo'); if(go) go.textContent=REG_OPEN?'סגירת הרשמה':'פתיחת הרשמה';
 }
-async function loadRegStatus_(){
-  try{ const r=await jsonpGet({action:'regStatus'}); if(r && typeof r.open==='boolean') REG_OPEN=r.open; }
-  catch(e){ console.warn('בדיקת מצב ההרשמה נכשלה',e); }
-  applyRegState_();
-}
-document.getElementById('adminToggle').addEventListener('click',()=>{
-  document.getElementById('adminPanel').classList.toggle('on');
-  document.getElementById('adminPw').focus();
-});
-async function adminSwitch_(){
-  const pwEl=document.getElementById('adminPw'), msg=document.getElementById('adminMsg');
-  const pw=pwEl.value; if(!pw.trim()) return;
-  msg.textContent='בודק…';
-  try{
-    const r=await jsonpGet({action:'setReg',open:REG_OPEN?'0':'1',adminPw:pw});
-    if(r && r.ok){ REG_OPEN=r.open; pwEl.value=''; msg.textContent=REG_OPEN?'ההרשמה נפתחה לכולם ✓':'ההרשמה נסגרה ✓'; applyRegState_(); }
-    else msg.textContent=(r && r.error)?'שגיאה בשרת':'הקוד שגוי';
-  }catch(e){
-    /* ייתכן שהפעולה הצליחה בשרת והתשובה רק התעכבה — בודקים את המצב האמיתי */
-    await loadRegStatus_();
-    msg.textContent=REG_OPEN?'ההרשמה פתוחה ✓ (התשובה התעכבה)':'ההרשמה סגורה (אם ניסית לפתוח — נסי שוב)';
-  }
-}
-document.getElementById('adminGo').addEventListener('click',adminSwitch_);
-document.getElementById('adminPw').addEventListener('keydown',e=>{ if(e.key==='Enter') adminSwitch_(); });
+(function(){
+  const logo=document.getElementById('heroLogo'); if(!logo) return;
+  let n=0, timer=null;
+  logo.addEventListener('click',()=>{
+    n++; clearTimeout(timer); timer=setTimeout(()=>{ n=0; },2500);
+    if(n>=5){
+      n=0;
+      const on=!previewOpen_();
+      try{ localStorage.setItem('pgPreviewOpen',on?'1':'0'); }catch(e){}
+      REG_OPEN=REGISTRATION_OPEN || on;
+      applyRegState_();
+      alert(on?'מצב בדיקה: ההרשמה פתוחה (רק אצלך).':'מצב בדיקה כבוי.');
+    }
+  });
+})();
 applyRegState_();
-loadRegStatus_();
-setInterval(loadRegStatus_,60000);
-
 boot();
 </script>
 
