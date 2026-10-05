@@ -20,7 +20,7 @@
 :root{
   --pg-orange:#FCAE6B; --pg-turquoise:#5CA6D8; --pg-coral:#B585BC; --pg-deep-teal:#1B5E8C;
   --pg-orange-ink:#A85410; --pg-teal-ink:#1B5E8C; --pg-coral-ink:#6B3E73; --pg-teal-solid:#1B5E8C;
-  --pg-text:#22303D; --pg-body:#45535E; --pg-muted:#67737D;
+  --pg-text:#16212B; --pg-body:#2A3540; --pg-muted:#4A5661;
   --pg-on-orange:#12233A; --pg-on-turquoise:#12233A; --pg-on-coral:#12233A;
   --pg-tint:#EBF5F3; --pg-orange-tint:#FEF3E7; --pg-teal-tint:#EAF4FA;
   --pg-surface:#F6F8F9; --pg-border:#E1E7EA; --pg-bg:#FFFFFF;
@@ -183,7 +183,17 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 .pg-modal{position:relative;background:var(--pg-bg);border-radius:var(--pg-radius-lg);
   max-width:640px;width:100%;max-height:90vh;overflow:auto;box-shadow:var(--pg-shadow)}
 .pg-modal img{width:100%;aspect-ratio:3/1;max-height:160px;object-fit:cover;display:block}
-.pg-modal .mbody{padding:22px 26px 28px}
+.pg-modal .mbody{padding:22px 26px 12px}
+.pg-modal .mfoot{position:sticky;bottom:0;background:var(--pg-bg);padding:12px 26px 16px;border-top:1px solid var(--pg-border)}
+.pg-modal .mfoot .pg-btn{width:100%}
+.pg-dtext{margin:0 0 .75rem;line-height:1.85;font-size:1.02rem;color:var(--pg-text)}
+.pg-mediaview{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(15,20,25,.74)}
+.pg-mediaview.on{display:flex;animation:pgFade .2s ease-out}
+.pg-mediaview .box{width:min(960px,100%)}
+.pg-mediaview .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pg-mediaview .bar a{color:#fff;font-weight:600}
+.pg-mediaview .frame{position:relative;padding-top:56.25%;background:#000;border-radius:16px;overflow:hidden}
+.pg-mediaview iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .pg-modal h2{font-size:1.4rem}
 .pg-mclose{position:absolute;top:10px;inset-inline-end:10px;background:rgba(0,0,0,.45);
   color:#fff;border:0;width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;z-index:2}
@@ -907,6 +917,39 @@ function closeRegPopup(){
   document.getElementById('regPopupOverlay').classList.remove('on');
 }
 
+/* תיאור הקורס בפסקאות קצרות — שורות נשברות כל משפט-שניים, כדי שיהיה קל לקרוא */
+function descParas_(desc){
+  const raw=String(desc||'').trim();
+  if(!raw) return '<p>תיאור הקורס יעודכן בקרוב.</p>';
+  const paras=[];
+  raw.split(/\n+/).forEach(chunk=>{
+    chunk=chunk.trim(); if(!chunk) return;
+    const sent=(chunk.match(/[^.!?]+[.!?]+\s*|[^.!?]+$/g)||[chunk]).map(s=>s.trim());
+    if(chunk.length<150 || sent.length<3){ paras.push(chunk); return; }
+    for(let i=0;i<sent.length;i+=2) paras.push(sent.slice(i,i+2).join(' '));
+  });
+  return paras.map(p=>`<p class="pg-dtext">${esc(p)}</p>`).join('');
+}
+/* סרטון/מצגת בחלון צף — לא תופס מקום בחלון הקורס ולא מסתיר את כפתור ההרשמה */
+function openMedia_(src,ext){
+  let v=document.getElementById('mediaView');
+  if(!v){
+    v=document.createElement('div'); v.id='mediaView'; v.className='pg-mediaview';
+    v.innerHTML='<div class="box"><div class="bar"><a id="mediaExt" target="_blank" rel="noopener">פתיחה בלשונית חדשה ↗</a><button type="button" id="mediaClose" class="pg-mclose" style="position:static" aria-label="סגירה">✕</button></div><div class="frame"><iframe id="mediaFrame" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe></div></div>';
+    document.body.appendChild(v);
+    v.addEventListener('click',e=>{ if(e.target===v) closeMedia_(); });
+    document.getElementById('mediaClose').addEventListener('click',closeMedia_);
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMedia_(); });
+  }
+  document.getElementById('mediaFrame').src=src;
+  document.getElementById('mediaExt').href=ext||src;
+  v.classList.add('on');
+}
+function closeMedia_(){
+  const v=document.getElementById('mediaView'); if(!v) return;
+  v.classList.remove('on'); document.getElementById('mediaFrame').src='about:blank';
+}
+
 /* ---------- מודל פרטים ---------- */
 function openModal(idx,triggerEl){
   const c=COURSES[idx]; if(!c) return;
@@ -925,25 +968,23 @@ function openModal(idx,triggerEl){
       <h2>${esc(c.name)}</h2>
       ${(()=>{
         const yt=youtubeEmbed_(c.videoLink), dv=driveEmbed_(c.presentationLink);
-        let out='';
-        if(yt) out+=`<div class="pg-embed"><iframe src="${esc(yt)}" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
-        if(dv) out+=`<div class="pg-embed"><iframe src="${esc(dv)}" allow="autoplay" allowfullscreen loading="lazy"></iframe></div>`;
-        const links=[];
-        if(c.presentationLink) links.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.presentationLink)}" target="_blank" rel="noopener">📊 ${dv?'פתיחת המצגת בחלון נפרד':'למצגת'}</a>`);
-        if(c.videoLink) links.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.videoLink)}" target="_blank" rel="noopener">🎬 ${yt?'פתיחת הסרטון בחלון נפרד':'לסרטון'}</a>`);
-        if(c.syllabusLink) links.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.syllabusLink)}" target="_blank" rel="noopener">📄 לסילבוס</a>`);
-        if(links.length) out+=`<div class="pg-btn-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:.6rem">${links.join('')}</div>`;
-        return out;
+        const btns=[];
+        if(yt) btns.push(`<button type="button" class="pg-btn pg-btn--ghost" data-media="${esc(yt)}" data-ext="${esc(c.videoLink)}">🎬 צפייה בסרטון</button>`);
+        else if(c.videoLink) btns.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.videoLink)}" target="_blank" rel="noopener">🎬 לסרטון</a>`);
+        if(dv) btns.push(`<button type="button" class="pg-btn pg-btn--ghost" data-media="${esc(dv)}" data-ext="${esc(c.presentationLink)}">📊 צפייה במצגת</button>`);
+        else if(c.presentationLink) btns.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.presentationLink)}" target="_blank" rel="noopener">📊 למצגת</a>`);
+        if(c.syllabusLink) btns.push(`<a class="pg-btn pg-btn--ghost" href="${esc(c.syllabusLink)}" target="_blank" rel="noopener">📄 לסילבוס</a>`);
+        return btns.length?`<div class="pg-btn-row" style="display:flex;gap:10px;flex-wrap:wrap;margin:.2rem 0 .6rem">${btns.join('')}</div>`:'';
       })()}
-      <p>${esc(c.desc)||'תיאור הקורס יעודכן בקרוב.'}</p>
+      ${descParas_(c.desc)}
       <dl class="pg-dl">
         <dt>מורה</dt><dd>${esc(c.teacher)||'—'}</dd>
       </dl>
-      <div class="pg-btn-row" style="display:flex;gap:10px;flex-wrap:wrap">
-        ${REG_OPEN
-          ?`<button type="button" class="pg-btn pg-btn--primary" id="mReg">להרשמה לקורס זה</button>`
-          :`<button type="button" class="pg-btn pg-btn--primary" id="mReg" disabled>ההרשמה תיפתח בקרוב</button>`}
-      </div>
+    </div>
+    <div class="mfoot">
+      ${REG_OPEN
+        ?`<button type="button" class="pg-btn pg-btn--primary" id="mReg">להרשמה לקורס זה</button>`
+        :`<button type="button" class="pg-btn pg-btn--primary" id="mReg" disabled>ההרשמה תיפתח בקרוב</button>`}
     </div>`;
   {
     const wrap=document.getElementById('modalWrap');
@@ -952,6 +993,7 @@ function openModal(idx,triggerEl){
     positionNearTrigger_(wrap,triggerEl);
   }
   document.getElementById('mClose').onclick=closeModal;
+  body.querySelectorAll('[data-media]').forEach(b=>{ b.onclick=()=>openMedia_(b.dataset.media,b.dataset.ext); });
   document.getElementById('mReg').onclick=(e)=>{
     if(!REG_OPEN) return;
     const rect=e.currentTarget.getBoundingClientRect();
@@ -1178,7 +1220,22 @@ document.getElementById('regSuccessClose').addEventListener('click',closeRegPopu
    הלוגו בראש העמוד פותחת/סוגרת את ההרשמה אצל מי שלחץ בלבד. */
 const REGISTRATION_OPEN=false;
 function previewOpen_(){ try{ return localStorage.getItem('pgPreviewOpen')==='1'; }catch(e){ return false; } }
+let SHEET_OPEN=false;
 let REG_OPEN=REGISTRATION_OPEN || previewOpen_();
+/* מתג בזמן אמת מהגיליון: לשונית "הגדרות", תא "הרשמה פתוחה" ובתא שלידו "כן"/"לא".
+   נקרא בכל טעינה ושוב כל 30 שניות. אם הקריאה נכשלת — נשאר המצב הקודם. */
+function recomputeReg_(){ REG_OPEN=REGISTRATION_OPEN || SHEET_OPEN || previewOpen_(); applyRegState_(); }
+async function loadRegSheet_(){
+  try{
+    const rows=tableRows(await jsonpTableByName('הגדרות'));
+    let val=null;
+    rows.forEach(r=>{ for(let k=0;k<r.length-1;k++){
+      if(String(r[k]).replace(/\s+/g,'').indexOf('הרשמהפתוחה')>=0) val=String(r[k+1]).trim();
+    } });
+    if(val!==null) SHEET_OPEN=(val==='כן');
+  }catch(e){ console.warn('קריאת מתג ההרשמה מהגיליון נכשלה',e); }
+  recomputeReg_();
+}
 function applyRegState_(){
   const b=document.getElementById('mReg');
   if(b){ b.disabled=!REG_OPEN; b.textContent=REG_OPEN?'להרשמה לקורס זה':'ההרשמה תיפתח בקרוב'; }
@@ -1192,13 +1249,14 @@ function applyRegState_(){
       n=0;
       const on=!previewOpen_();
       try{ localStorage.setItem('pgPreviewOpen',on?'1':'0'); }catch(e){}
-      REG_OPEN=REGISTRATION_OPEN || on;
-      applyRegState_();
+      recomputeReg_();
       alert(on?'מצב בדיקה: ההרשמה פתוחה (רק אצלך).':'מצב בדיקה כבוי.');
     }
   });
 })();
 applyRegState_();
+loadRegSheet_();
+setInterval(loadRegSheet_,30000);
 boot();
 </script>
 
