@@ -250,12 +250,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   </div>
 </div>
 
-<section class="pg-hero">
-  <div class="pg-wrap">
-    <img id="heroLogo" src="logo.png" alt="קמפוס חמ&quot;ד" onerror="this.style.display='none'" style="display:block;height:120px;width:auto;margin-bottom:10px">
-    <h1>קטלוג קורסים תשפ"ז</h1>
-  </div>
-</section>
+
 <hr class="pg-seam">
 
 <div class="pg-controls">
@@ -392,7 +387,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 
 <footer class="pg-footer">
   <div class="pg-wrap">
-    <div>קמפוס חמ"ד · מחוז חיפה</div>
+    <div id="heroLogo">קמפוס חמ"ד · מחוז חיפה</div>
     <div id="srcNote">טוען נתונים…</div>
   </div>
 </footer>
@@ -1268,7 +1263,7 @@ document.getElementById('regSuccessClose').addEventListener('click',closeRegPopu
    האתר פתוח לצפייה, וכפתור ההרשמה נעול כל עוד REGISTRATION_OPEN=false.
    כדי לפתוח לכולם: משנים את הערך ל-true למטה ועושים Push ב-GitHub Desktop.
    מצב בדיקה (רק בדפדפן הזה, בלי שרת ובלי סיסמה): לחיצה מהירה 5 פעמים על
-   הלוגו בראש העמוד פותחת/סוגרת את ההרשמה אצל מי שלחץ בלבד. */
+   הטקסט "קמפוס חמ"ד · מחוז חיפה" בתחתית העמוד פותחת/סוגרת את ההרשמה אצל מי שלחץ בלבד. */
 const REGISTRATION_OPEN=false;
 function previewOpen_(){ try{ return localStorage.getItem('pgPreviewOpen')==='1'; }catch(e){ return false; } }
 /* מתג הרשמה בזמן אמת מהגיליון — לשונית "הגדרות", שורות (שם בעמודה הראשונה, "כן"/"לא" בשנייה):
