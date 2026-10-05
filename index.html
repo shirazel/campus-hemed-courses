@@ -1199,13 +1199,6 @@ let REG_OPEN=false;
 function applyRegState_(){
   const b=document.getElementById('mReg');
   if(b){ b.disabled=!REG_OPEN; b.textContent=REG_OPEN?'להרשמה לקורס זה':'ההרשמה תיפתח בקרוב'; }
-  let bn=document.getElementById('regClosedBanner');
-  if(!bn){
-    bn=document.createElement('div'); bn.id='regClosedBanner'; bn.className='pg-regclosed';
-    bn.textContent='ההרשמה לקורסים תיפתח בקרוב. בינתיים אפשר לעיין בקורסים ולהתרשם מהם.';
-    const g=document.getElementById('grid'); g.parentNode.insertBefore(bn,g);
-  }
-  bn.style.display=REG_OPEN?'none':'block';
   const go=document.getElementById('adminGo'); if(go) go.textContent=REG_OPEN?'סגירת הרשמה':'פתיחת הרשמה';
 }
 async function loadRegStatus_(){
