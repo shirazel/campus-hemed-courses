@@ -48,7 +48,7 @@ p{margin:0 0 1rem}
 a{color:var(--pg-teal-ink)}
 button,input,select,textarea{font-family:inherit;font-size:inherit}
 .pg-wrap{max-width:1180px;margin-inline:auto;padding-inline:24px}
-.pg-section{padding-block:clamp(28px,5vw,52px)}
+.pg-section{padding-block:clamp(16px,3vw,28px)}
 .pg-seam{height:4px;border:0;border-radius:2px;margin:0;
   background:linear-gradient(to left,var(--pg-turquoise),var(--pg-coral))}
 .pg-eyebrow{font-family:var(--pg-font-head);font-weight:600;font-size:.9375rem;color:var(--pg-teal-ink);margin:0 0 .4rem}
@@ -56,8 +56,9 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 /* header */
 
 /* hero — גרדיאנט שמיים פסטלי, נדגם מרקע האתר האמיתי של הקמפוס */
-.pg-hero{padding-block:clamp(24px,5vw,40px)}
-.pg-hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:700}
+.pg-hero{padding-block:clamp(12px,2.5vw,22px);text-align:center}
+.pg-hero img{margin-inline:auto}
+.pg-hero h1{font-size:clamp(1.6rem,3.6vw,2.3rem);font-weight:700}
 .pg-lede{font-size:1.0625rem;line-height:1.7;max-width:66ch;margin-top:.6rem;color:var(--pg-body)}
 .pg-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:1.2rem}
 .pg-stat{display:inline-flex;align-items:center;gap:.4rem;background:var(--pg-bg);
@@ -68,10 +69,11 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 /* controls */
 .pg-controls{position:sticky;top:0;z-index:5;background:var(--pg-bg);
   border-bottom:1px solid var(--pg-border);padding-block:14px}
-.pg-controls .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.pg-controls select{padding:.55rem .8rem;border:1.5px solid var(--pg-border);
+.pg-controls .row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center}
+.pg-controls select{min-width:min(320px,100%);padding:.6rem 1rem;border:1.5px solid var(--pg-border);
   border-radius:var(--pg-radius-pill);background:var(--pg-surface);color:var(--pg-text);cursor:pointer}
-.pg-count{font-size:.9rem;color:var(--pg-muted);white-space:nowrap;margin-inline-start:auto}
+.pg-count{font-size:.9rem;color:var(--pg-muted);white-space:nowrap}
+.pg-controls .pg-note{text-align:center}
 .pg-clear{background:none;border:0;color:var(--pg-teal-ink);font-weight:600;cursor:pointer;font-size:.9rem;text-decoration:underline}
 
 /* פס קטן שמופיע אחרי שנבחר בית ספר, ומאפשר להחליף */
