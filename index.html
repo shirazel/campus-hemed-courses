@@ -74,6 +74,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
   border-radius:var(--pg-radius-pill);background:var(--pg-surface);color:var(--pg-text);cursor:pointer}
 .pg-count{font-size:.9rem;color:var(--pg-muted);white-space:nowrap}
 .pg-controls .pg-note{text-align:center}
+.pg-field:has([required])>label::after{content:" *";color:#b91c1c;font-weight:700}
 .pg-clear{background:none;border:0;color:var(--pg-teal-ink);font-weight:600;cursor:pointer;font-size:.9rem;text-decoration:underline}
 
 /* פס קטן שמופיע אחרי שנבחר בית ספר, ומאפשר להחליף */
@@ -256,7 +257,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
     <button class="pg-mclose" id="regPopupClose" aria-label="סגירה">✕</button>
     <div id="regFormArea">
     <p class="pg-eyebrow">מעוניינים?</p>
-    <h2 style="margin-bottom:1rem">מעוניינים להרשם לקורס זה? מלאו את הפרטים, הקפידו על פרטים מדוייקים ונכונים.</h2>
+    <h2 style="margin-bottom:1rem">מעוניינים להרשם לקורס זה? מלאו את הפרטים, הקפידו על פרטים מדוייקים ונכונים. כל השדות הם חובה.</h2>
     <div class="pg-form pg-formgate locked" id="formGate">
       <div class="pg-formgate-note show" id="formGateNote">בחרו בית ספר כדי להירשם לקורס — לחצו כאן לבחירה</div>
       <div class="pg-formmsg pg-formmsg--warn" id="dupMsg" style="display:none"></div>
@@ -1073,6 +1074,13 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
     dupMsg.style.display='block';
     document.getElementById('fParentEmail').focus();
     return;
+  }
+  /* כל השדות חובה — גם בלי רווחים בלבד */
+  for(const el of this.querySelectorAll("[required]")){
+    if(String(el.value||"").trim()===""){
+      dupMsg.textContent="כל השדות בטופס הם חובה — נא למלא את כולם.";
+      dupMsg.style.display="block"; el.focus(); return;
+    }
   }
   /* בדיקות תקינות: ת.ז. של 9 ספרות, וכתובות מייל תקינות (כולל סיומת, למשל name@gmail.com) */
   const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
