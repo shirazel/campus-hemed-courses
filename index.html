@@ -312,7 +312,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
           </div>
           <div class="pg-field">
             <label for="fIdNumber">תעודת זהות התלמיד/ה</label>
-            <input type="text" id="fIdNumber" name="תז" required inputmode="numeric" pattern="[0-9]*">
+            <input type="text" id="fIdNumber" name="תז" required inputmode="numeric" pattern="[0-9]{9}" maxlength="9" autocomplete="off" title="תעודת זהות של 9 ספרות (כולל אפס מוביל)">
           </div>
           <div class="pg-field">
             <label for="fPw">סיסמת הרשמה (ניתנה לתלמידי הקמפוס)</label>
@@ -1073,6 +1073,20 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
     dupMsg.style.display='block';
     document.getElementById('fParentEmail').focus();
     return;
+  }
+  /* בדיקות תקינות: ת.ז. של 9 ספרות, וכתובות מייל תקינות (כולל סיומת, למשל name@gmail.com) */
+  const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  if(!/^\d{9}$/.test(idNumber)){
+    dupMsg.textContent='תעודת הזהות חייבת להכיל 9 ספרות (כולל אפס מוביל, אם יש).';
+    dupMsg.style.display='block'; document.getElementById('fIdNumber').focus(); return;
+  }
+  if(!emailOk(studentEmail)){
+    dupMsg.textContent='כתובת המייל של התלמיד/ה אינה תקינה — נא לבדוק (למשל name@gmail.com).';
+    dupMsg.style.display='block'; document.getElementById('fEmail').focus(); return;
+  }
+  if(!emailOk(parentEmail)){
+    dupMsg.textContent='כתובת המייל של ההורה אינה תקינה — נא לבדוק (למשל name@gmail.com).';
+    dupMsg.style.display='block'; document.getElementById('fParentEmail').focus(); return;
   }
   submitBtn.disabled=true; submitBtn.textContent='בודק…';
   checkNote.style.display='block';
