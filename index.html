@@ -244,6 +244,9 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
       <option value="בנים">בן</option>
       <option value="בנות">בת</option>
     </select>
+    <select id="fMySlotPopup" style="display:none;margin-top:8px">
+      <option value="">באיזו רצועה הכיתה שלכם לומדת?</option>
+    </select>
   </div>
 </div>
 
@@ -262,6 +265,9 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
       <option value="">בית הספר מעורב — את/ה בן או בת?</option>
       <option value="בנים">בן</option>
       <option value="בנות">בת</option>
+    </select>
+    <select id="fMySlot" style="display:none">
+      <option value="">באיזו רצועה הכיתה שלכם לומדת?</option>
     </select>
     <button class="pg-clear" id="btnClear" type="button">איפוס סינון</button>
     <span class="pg-count" id="resCount"></span>
@@ -733,6 +739,9 @@ function schoolAllows(c,schoolName){
   if(!info || !info.slots.length) return false;
   const tk=trackKeyOf(c.track);
   if(tk && !info.slots.includes(tk)) return false;
+  /* בית ספר שלומד ביותר מרצועה אחת: אחרי שהתלמיד בחר את הרצועה של הכיתה שלו —
+     מוצגים רק קורסי הרצועה הזו (עד שיבחר, מוצגים כל קורסי בית הספר לצפייה) */
+  if(tk && info.slots.length>1 && state.slot && tk!==state.slot) return false;
   const effGender=info.gender==='מעורב'?(state.gender||''):info.gender;
   if(c.audience && effGender && c.audience!==effGender) return false;
   return true;
@@ -743,6 +752,12 @@ function schoolNeedsGender_(schoolName){
   const info=findSchoolInfo_(schoolName);
   return !!(info && info.gender==='מעורב');
 }
+/* בית ספר עם יותר מרצועה אחת — התלמיד בוחר באיזו רצועה הכיתה שלו לומדת */
+function schoolNeedsSlot_(schoolName){
+  const info=findSchoolInfo_(schoolName);
+  return !!(info && info.slots.length>1);
+}
+const slotLabel_=k=>{const s=SLOTS.find(x=>x.key===k); return s?s.label+' ('+s.time+')':k;};
 /* טקסט תצוגה ליד "איפוס סינון": מסביר לפי מה מסונן, או מזהיר אם חסר שיבוץ */
 function schoolTrackLabel_(schoolName){
   if(!schoolName) return '';
@@ -754,7 +769,10 @@ function schoolTrackLabel_(schoolName){
   if(info.gender==='מעורב' && !state.gender){
     return '⚠️ בית ספר מעורב — יש לבחור למעלה "בן" או "בת" כדי לראות את הקורסים הרלוונטיים.';
   }
-  return 'משויך ל: '+labels+(info.gender?' · '+(info.gender==='מעורב'?state.gender:info.gender):'');
+  if(info.slots.length>1 && !state.slot){
+    return '⚠️ בית הספר שלכם לומד ביותר מרצועה אחת — יש לבחור למעלה באיזו רצועה הכיתה שלכם, כדי לראות את הקורסים שלה.';
+  }
+  return 'משויך ל: '+(info.slots.length>1?slotLabel_(state.slot):labels)+(info.gender?' · '+(info.gender==='מעורב'?state.gender:info.gender):'');
 }
 
 async function boot(){
@@ -790,7 +808,7 @@ function afterLoad(note){
 /* ---------- סינון ---------- */
 /* אין יותר בורר "רצועות" עצמאי — הסינון היחיד הוא לפי בית ספר; הרצועה/מגדר
    המשויכים לבית הספר שנבחר מוצגים כתצוגה בלבד (schoolTrackLabel_), לא כבחירה. */
-let state={school:'',gender:''};
+let state={school:'',gender:'',slot:''};
 function buildFilters(){
   /* בית הספר שלי — רשימה נפתחת מלאה ממאסטר המוסדות, גם בשורת הסינון
      וגם בפופ-אפ (שני מקומות לאותה בחירה, כפי שביקשה שירה) */
@@ -858,7 +876,7 @@ function renderGrid(){
    תמיד; הבחירה נדרשת רק כדי לפתוח קורס ספציפי/להירשם) ---------- */
 let pendingIdx=null, pendingTrigger=null;
 function requestOpen(idx,triggerEl){
-  if(!state.school || (schoolNeedsGender_(state.school) && !state.gender)){
+  if(!state.school || (schoolNeedsGender_(state.school) && !state.gender) || (schoolNeedsSlot_(state.school) && !state.slot)){
     pendingIdx=idx; pendingTrigger=triggerEl||null; openGatePopup(); return;
   }
   openModal(idx,triggerEl);
@@ -1032,7 +1050,8 @@ function buildCourseSelect(){
    לבחור קודם בית ספר */
 function refreshSchoolGate(){
   const needsGender=state.school && schoolNeedsGender_(state.school);
-  const on=!!state.school && (!needsGender || !!state.gender);
+  const needsSlot=!!state.school && schoolNeedsSlot_(state.school);
+  const on=!!state.school && (!needsGender || !!state.gender) && (!needsSlot || !!state.slot);
   document.getElementById('formGate').classList.toggle('locked',!on);
   document.getElementById('formGateNote').classList.toggle('show',!on);
   document.getElementById('fSchoolName').value=state.school||'';
@@ -1043,6 +1062,16 @@ function refreshSchoolGate(){
     const el=document.getElementById(id); if(!el) return;
     el.style.display=needsGender?'':'none';
     el.value=state.gender||'';
+  });
+  ['fMySlot','fMySlotPopup'].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    el.style.display=needsSlot?'':'none';
+    if(needsSlot){
+      const info=findSchoolInfo_(state.school);
+      el.innerHTML='<option value="">באיזו רצועה הכיתה שלכם לומדת?</option>'+
+        info.slots.map(k=>'<option value="'+esc(k)+'">'+esc(slotLabel_(k))+'</option>').join('');
+      el.value=state.slot||'';
+    }
   });
   const note=document.getElementById('schoolTrackNote');
   if(note) note.textContent=schoolTrackLabel_(state.school);
@@ -1056,13 +1085,14 @@ function refreshSchoolGate(){
    לפי בית הספר (schoolAllows), ומוצגים כטקסט בלבד (schoolTrackLabel_) —
    אין יותר בורר רצועה נפרד לבחירה ידנית. */
 function selectSchool(name){
-  if(name!==state.school) state.gender='';
+  if(name!==state.school){ state.gender=''; state.slot=''; }
   state.school=name;
   refreshSchoolGate(); renderGrid();
   if(!state.school) return;
   /* בית ספר מעורב — לפני שסוגרים את הפופ-אפ ופותחים קורס ממתין, צריך
      קודם לדעת "בן או בת" (מוצג בפופ-אפ עצמו, ר' selectGender) */
   if(schoolNeedsGender_(state.school) && !state.gender) return;
+  if(schoolNeedsSlot_(state.school) && !state.slot) return;
   closeGatePopup();
   if(pendingIdx!=null){
     const idx=pendingIdx, trig=pendingTrigger; pendingIdx=null; pendingTrigger=null;
@@ -1074,6 +1104,7 @@ function selectGender(g){
   state.gender=g;
   refreshSchoolGate(); renderGrid();
   if(!state.gender) return;
+  if(schoolNeedsSlot_(state.school) && !state.slot) return;
   closeGatePopup();
   if(pendingIdx!=null){
     const idx=pendingIdx, trig=pendingTrigger; pendingIdx=null; pendingTrigger=null;
@@ -1081,6 +1112,20 @@ function selectGender(g){
     if(c && matchesFilters(c)) openModal(idx,trig);
   }
 }
+function selectSlot(k){
+  state.slot=k;
+  refreshSchoolGate(); renderGrid();
+  if(!state.slot) return;
+  if(schoolNeedsGender_(state.school) && !state.gender) return;
+  closeGatePopup();
+  if(pendingIdx!=null){
+    const idx=pendingIdx, trig=pendingTrigger; pendingIdx=null; pendingTrigger=null;
+    const c=COURSES[idx];
+    if(c && matchesFilters(c)) openModal(idx,trig);
+  }
+}
+document.getElementById('fMySlot').addEventListener('change',e=>selectSlot(e.target.value));
+document.getElementById('fMySlotPopup').addEventListener('change',e=>selectSlot(e.target.value));
 document.getElementById('fMySchool').addEventListener('change',e=>selectSchool(e.target.value));
 document.getElementById('fMySchoolPopup').addEventListener('change',e=>selectSchool(e.target.value));
 document.getElementById('fMyGender').addEventListener('change',e=>selectGender(e.target.value));
@@ -1107,7 +1152,7 @@ document.getElementById('regPopupOverlay').addEventListener('click',closeRegPopu
   document.addEventListener('mousemove',maybeOpenOnHover,true);
 })();
 document.getElementById('btnClear').addEventListener('click',()=>{
-  state={school:state.school,gender:state.gender};
+  state={school:state.school,gender:state.gender,slot:state.slot};
   renderGrid();
 });
 
