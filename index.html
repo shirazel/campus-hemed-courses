@@ -544,7 +544,7 @@ const REG_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxL5hDOZQmPwE2z-l0
 function jsonpGet(params){
   return new Promise((resolve,reject)=>{
     const cb='chemedRegCB'+(__jsonpN++)+'_'+Date.now();
-    const timer=setTimeout(()=>{cleanup();reject(new Error('פסק זמן בתגובה מהשרת'))},15000);
+    const timer=setTimeout(()=>{cleanup();reject(new Error('פסק זמן בתגובה מהשרת'))},45000);
     function cleanup(){try{delete window[cb]}catch(e){window[cb]=undefined}
       const el=document.getElementById(cb); if(el)el.remove(); clearTimeout(timer);}
     window[cb]=function(resp){cleanup();resolve(resp);};
@@ -1200,7 +1200,11 @@ async function adminSwitch_(){
     const r=await jsonpGet({action:'setReg',open:REG_OPEN?'0':'1',adminPw:pw});
     if(r && r.ok){ REG_OPEN=r.open; pwEl.value=''; msg.textContent=REG_OPEN?'ההרשמה נפתחה לכולם ✓':'ההרשמה נסגרה ✓'; applyRegState_(); }
     else msg.textContent=(r && r.error)?'שגיאה בשרת':'הקוד שגוי';
-  }catch(e){ msg.textContent='שגיאת רשת — נסי שוב'; }
+  }catch(e){
+    /* ייתכן שהפעולה הצליחה בשרת והתשובה רק התעכבה — בודקים את המצב האמיתי */
+    await loadRegStatus_();
+    msg.textContent=REG_OPEN?'ההרשמה פתוחה ✓ (התשובה התעכבה)':'ההרשמה סגורה (אם ניסית לפתוח — נסי שוב)';
+  }
 }
 document.getElementById('adminGo').addEventListener('click',adminSwitch_);
 document.getElementById('adminPw').addEventListener('keydown',e=>{ if(e.key==='Enter') adminSwitch_(); });
