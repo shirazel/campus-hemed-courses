@@ -1227,18 +1227,21 @@ document.getElementById('regSuccessClose').addEventListener('click',closeRegPopu
 const REGISTRATION_OPEN=false;
 function previewOpen_(){ try{ return localStorage.getItem('pgPreviewOpen')==='1'; }catch(e){ return false; } }
 /* מתג הרשמה בזמן אמת מהגיליון — לשונית "הגדרות", שורות (שם בעמודה הראשונה, "כן"/"לא" בשנייה):
-     הרשמה פתוחה               ← פותח לכל הרצועות
-     הרשמה פתוחה לפני הצהריים  ← פותח רק לקורסי הבוקר (9:30 ו-11:10)
-     הרשמה פתוחה אחר הצהריים   ← פותח רק לקורסי הצהריים (14:00)
+     הרשמה פתוחה          ← פותח לכל הרצועות
+     הרשמה פתוחה בוקר     ← רצועת 9:30   (גם: "הרשמה פתוחה 9")
+     הרשמה פתוחה צהרים    ← רצועת 11:10  (גם: "הרשמה פתוחה 11")
+     הרשמה פתוחה אחה"צ    ← רצועת 14:00  (גם: "הרשמה פתוחה 14")
    נקרא בכל טעינה ושוב כל 30 שניות. אם הקריאה נכשלת — נשאר המצב הקודם.
    קורס בלי רצועה נפתח רק עם "הרשמה פתוחה" הכללית. */
-let SHEET_OPEN={all:false,morning:false,afternoon:false};
-const MORNING_KEYS=['9:30','11:10'], AFTERNOON_KEYS=['14:00'];
+let SHEET_OPEN={all:false,'9:30':false,'11:10':false,'14:00':false};
+const SLOT_ROW_KEYS={
+  '9:30':['בוקר','9','930'],
+  '11:10':['צהרים','צהריים','11','1110'],
+  '14:00':['אחהצ','אחרהצהריים','אחריהצהריים','14','1400']
+};
 function regOpenForTrack_(tk){
   if(REGISTRATION_OPEN || previewOpen_() || SHEET_OPEN.all) return true;
-  if(MORNING_KEYS.includes(tk) && SHEET_OPEN.morning) return true;
-  if(AFTERNOON_KEYS.includes(tk) && SHEET_OPEN.afternoon) return true;
-  return false;
+  return !!(tk && SHEET_OPEN[tk]);
 }
 const regOpenFor_=c=>regOpenForTrack_(trackKeyOf(c&&c.track));
 /* לפי שם קורס שנבחר בטופס — פתוח אם אחד המופעים המותרים לבית הספר שנבחר פתוח */
@@ -1250,18 +1253,19 @@ function recomputeReg_(){ applyRegState_(); }
 async function loadRegSheet_(){
   try{
     const rows=tableRows(await jsonpTableByName('הגדרות'));
-    const next={all:SHEET_OPEN.all,morning:SHEET_OPEN.morning,afternoon:SHEET_OPEN.afternoon};
+    const next=Object.assign({},SHEET_OPEN);
     rows.forEach(r=>{ for(let k=0;k<r.length-1;k++){
-      const key=String(r[k]).replace(/[^א-ת]/g,''), on=String(r[k+1]).trim()==='כן';
-      if(key==='הרשמהפתוחה') next.all=on;
-      else if(key==='הרשמהפתוחהלפניהצהריים'||key==='הרשמהפתוחהבוקר') next.morning=on;
-      else if(key==='הרשמהפתוחהאחרהצהריים'||key==='הרשמהפתוחהצהריים') next.afternoon=on;
+      const key=String(r[k]).replace(/[^א-ת0-9]/g,''), on=String(r[k+1]).trim()==='כן';
+      if(key==='הרשמהפתוחה'){ next.all=on; continue; }
+      if(key.indexOf('הרשמהפתוחה')!==0) continue;
+      const rest=key.slice('הרשמהפתוחה'.length);
+      if(rest==='לפניהצהריים'){ next['9:30']=on; next['11:10']=on; continue; }
+      Object.keys(SLOT_ROW_KEYS).forEach(slot=>{ if(SLOT_ROW_KEYS[slot].includes(rest)) next[slot]=on; });
     } });
     SHEET_OPEN=next;
   }catch(e){ console.warn('קריאת מתג ההרשמה מהגיליון נכשלה',e); }
   recomputeReg_();
-}
-function applyRegState_(){
+}function applyRegState_(){
   const b=document.getElementById('mReg'), c=window.__modalCourse;
   if(b && c){ const o=regOpenFor_(c); b.disabled=!o; b.textContent=o?'להרשמה לקורס זה':'ההרשמה תיפתח בקרוב'; }
 }
