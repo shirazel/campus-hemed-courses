@@ -642,7 +642,9 @@ async function mergeAssignments(raw){
       track:(iT>=0?cellClean(r[iT]):'')||(base&&base.track)||'',
       teacher:(iTe>=0?cellClean(r[iTe]):'')||(base&&base.teacher)||'',
       school:(iS>=0?cellClean(r[iS]):'')||(base&&base.school)||'',
-      status:(iSt>=0?cellClean(r[iSt]):'')};
+      /* סטטוס מלשונית השיבוץ; אם ריק (למשל כי שם הקורס שונה מעט בין הלשוניות) —
+         נופלים לסטטוס של קורס־המקור שנמצא לפי שם בסיס */
+      status:((iSt>=0?cellClean(r[iSt]):'')||(base&&base.status)||'')};
   }).filter(Boolean)
     /* קורס בלי רצועה (טרם שובץ בלוח הניהול) ובלי נעילה לבית ספר — לא מוצג בכלל.
        אחרת הוא נראה לכל בית ספר, בכל רצועה ובכל מתחם, ותלמידים יכולים להירשם אליו בטעות */
