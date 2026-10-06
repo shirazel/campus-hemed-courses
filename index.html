@@ -1179,6 +1179,7 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
   }
   if(this.dataset.bypassCheck==='1'){ this.dataset.bypassCheck=''; return; } // כבר נבדק — לתת לשליחה להמשיך כרגיל
   e.preventDefault();
+  if(window.__sending) return; // שליחה כבר בתהליך — מתעלמים מלחיצות נוספות
   if(!regOpenForName_(document.getElementById('fCourse').value)){
     const dm=document.getElementById('dupMsg');
     dm.textContent='ההרשמה עדיין לא נפתחה. נא לנסות שוב כשההרשמה תיפתח.';
@@ -1259,6 +1260,7 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
   }
   /* שולחים, ואז מאמתים מול השרת שההרשמה אכן נשמרה (הטופס נשלח ל-iframe נסתר ולכן אי אפשר
      לדעת אחרת אם השרת קיבל או דחה) — הודעת ההצלחה מוצגת רק אחרי אישור */
+  window.__sending=true;
   window.__pendingReg={id:idNumber,course:courseName};
   submitBtn.disabled=true; submitBtn.textContent='שולח…';
   checkNote.textContent='שולחים ומאמתים את ההרשמה — זה יכול לקחת עד חצי דקה, נא לא לסגור…';
@@ -1278,6 +1280,7 @@ document.getElementById('hidden_iframe').addEventListener('load',function(){
       if(!ok && i<1) await new Promise(res=>setTimeout(res,2000));
     }
     if(!ok && !answered) ok=true;
+    window.__sending=false;
     const sb=document.getElementById('regSubmitBtn'), cn=document.getElementById('checkingNote'), dm=document.getElementById('dupMsg');
     sb.disabled=false; sb.textContent='שליחת פרטים ←'; cn.textContent='בודק שהפרטים תקינים — זה עשוי לקחת כמה שניות…'; cn.style.display='none';
     if(!ok){
