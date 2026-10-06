@@ -1219,83 +1219,47 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
     dupMsg.textContent='כתובת המייל של ההורה אינה תקינה — נא לבדוק (למשל name@gmail.com).';
     dupMsg.style.display='block'; document.getElementById('fParentEmail').focus(); return;
   }
-  submitBtn.disabled=true; submitBtn.textContent='בודק…';
-  checkNote.style.display='block';
-  /* שתי הבדיקות המקדימות (קורס מלא + הרשמה כפולה) רצות במקביל וב-12 שניות לכל היותר —
-     אם השרת איטי או לא עונה ממשיכים לשליחה (השרת בודק את המכסה בעצמו) במקום לתקוע את התלמיד */
-  const fullP=jsonpGet({action:'checkFull',course:courseName},12000).catch(e=>null);
-  const idP=jsonpGet({action:'checkId',idNumber},12000);
-  idP.catch(()=>{});
-  /* קורס מלא — השרת חוסם הרשמה מעבר למכסה; כאן בודקים מראש כדי להציג הודעה ברורה */
-  try{
-    const fullResp=await fullP;
-    if(fullResp && fullResp.full===true){
-      dupMsg.textContent='הקורס הזה כבר מלא. אפשר לבחור קורס אחר.';
-      dupMsg.style.display='block';
-      submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←'; checkNote.style.display='none';
-      loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} });
-      return;
-    }
-  }catch(err){
-    console.warn('בדיקת מכסה נכשלה — השרת יבדוק אותה שוב בשליחה',err);
-  }
-  try{
-    const resp=await idP;
-    if(resp && resp.found){
-      if(resp.course && resp.course===courseName){
-        dupMsg.textContent='כבר יש הרשמה קיימת עם תעודת הזהות הזו לקורס הזה בדיוק.';
-        dupMsg.style.display='block';
-        submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←'; checkNote.style.display='none';
-        return;
-      }
-      const ok=confirm('נמצאה הרשמה קודמת עם תעודת הזהות הזו לקורס "'+(resp.course||'')+'".\nלבטל את ההרשמה הקודמת ולהחליף אותה בהרשמה הנוכחית?');
-      if(!ok){
-        submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←'; checkNote.style.display='none';
-        return;
-      }
-      document.getElementById('fCancelPrevious').value='1';
-    }
-  }catch(err){
-    console.warn('בדיקת הרשמה כפולה נכשלה — ממשיכים בלי הבדיקה',err);
-  }
-  /* שולחים, ואז מאמתים מול השרת שההרשמה אכן נשמרה (הטופס נשלח ל-iframe נסתר ולכן אי אפשר
-     לדעת אחרת אם השרת קיבל או דחה) — הודעת ההצלחה מוצגת רק אחרי אישור */
+  /* בלי בדיקות מקדימות מול השרת (היו איטיות) — שולחים מיד. השרת עצמו מונע כפילות (אותה ת.ז. לאותו
+     קורס) ואוכף את מכסת הקורס. */
   window.__sending=true;
   window.__pendingReg={id:idNumber,course:courseName};
   submitBtn.disabled=true; submitBtn.textContent='שולח…';
-  checkNote.textContent='שולחים ומאמתים את ההרשמה — זה יכול לקחת עד חצי דקה, נא לא לסגור…';
+  checkNote.textContent='שולח את ההרשמה…';
   checkNote.style.display='block';
   this.dataset.bypassCheck='1';
   this.submit();
+  setTimeout(finishReg_,6000); // אם השרת איטי — לא ממתינים לו מעבר ל-6 שניות
 });
+/* סיום השליחה — נקרא כשה-iframe הנסתר נטען (השרת ענה), או אחרי 6 שניות אם השרת של גוגל איטי,
+   כדי שהתלמיד לא יישאר תקוע על "שולח…" */
+function finishReg_(){
+  const pr=window.__pendingReg; if(!pr) return; window.__pendingReg=null;
+  window.__sending=false;
+  const sb=document.getElementById('regSubmitBtn'), cn=document.getElementById('checkingNote'), dm=document.getElementById('dupMsg');
+  sb.disabled=false; sb.textContent='שליחת פרטים ←'; cn.style.display='none';
+  /* מציגים הצלחה מיד, בלי להמתין לשרת האיטי של גוגל */
+  document.getElementById('regForm').reset();
+  document.getElementById('fCancelPrevious').value='';
+  dm.style.display='none';
+  document.getElementById('regFormArea').style.display='none';
+  const sa=document.getElementById('regSuccessArea'); sa.style.display='block';
+  const old=document.getElementById('regWarn'); if(old) old.remove();
+  /* אימות ברקע: רק אם השרת עונה במפורש שההרשמה לא נמצאה — מוסיפים אזהרה; אם הוא איטי או לא עונה, לא עושים כלום */
+  (async()=>{
+    try{
+      const r=await jsonpGet({action:'checkId',idNumber:pr.id},25000);
+      if(!(r&&r.found&&r.course===pr.course)){
+        const w=document.createElement('div'); w.id='regWarn'; w.className='pg-regclosed';
+        w.textContent='שימו לב: לא הצלחנו לאשר שההרשמה נקלטה. אם לא תקבלו אישור מהצוות, אפשר להירשם שוב.';
+        sa.appendChild(w);
+      }
+    }catch(e){}
+    loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} });
+  })();
+}
 document.getElementById('hidden_iframe').addEventListener('load',function(){
   if(!this.dataset.first){this.dataset.first='1';return;} // ה-load הראשון הוא טעינת ה-iframe הריק עצמו
-  const pr=window.__pendingReg; if(!pr) return; window.__pendingReg=null;
-  (async()=>{
-    /* מאמתים שההרשמה נשמרה. רק תשובה מפורשת של השרת "לא נמצאה" נחשבת כשל; אם השרת איטי או לא עונה
-       (קורה בגוגל) — לא מעכבים את התלמיד ומציגים הצלחה, כי אין עוד חסימה בשרת והשורה בדרך כלל כבר נשמרה */
-    let ok=false, answered=false;
-    for(let i=0;i<2&&!ok;i++){
-      try{ const r=await jsonpGet({action:'checkId',idNumber:pr.id},15000); answered=true; if(r&&r.found&&r.course===pr.course) ok=true; }catch(e){}
-      if(!ok && i<1) await new Promise(res=>setTimeout(res,2000));
-    }
-    if(!ok && !answered) ok=true;
-    window.__sending=false;
-    const sb=document.getElementById('regSubmitBtn'), cn=document.getElementById('checkingNote'), dm=document.getElementById('dupMsg');
-    sb.disabled=false; sb.textContent='שליחת פרטים ←'; cn.textContent='בודק שהפרטים תקינים — זה עשוי לקחת כמה שניות…'; cn.style.display='none';
-    if(!ok){
-      dm.textContent='לא הצלחנו לאשר את ההרשמה. אפשר ללחוץ שוב על "שליחת פרטים" — אם ההרשמה כבר נקלטה, המערכת תזהה זאת. אם זה חוזר, נא לפנות לצוות.';
-      dm.style.display='block'; return;
-    }
-  /* בקשת שירה 17.9.2026: אחרי שליחה מוצלחת הטופס "נסגר" (מוסתר) ובמקומו
-     מוצגת בתוך אותו פופ-אפ (כבר ממוקם נכון על המסך) הודעת הצלחה במרכז. */
-    document.getElementById('regForm').reset();
-    document.getElementById('fCancelPrevious').value='';
-    dm.style.display='none';
-    document.getElementById('regFormArea').style.display='none';
-    document.getElementById('regSuccessArea').style.display='block';
-    loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} }); // לרענן "נשארו X מקומות" אחרי הרשמה חדשה
-  })();
+  finishReg_();
 });
 document.getElementById('regSuccessClose').addEventListener('click',closeRegPopup);
 
