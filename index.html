@@ -643,7 +643,10 @@ async function mergeAssignments(raw){
       teacher:(iTe>=0?cellClean(r[iTe]):'')||(base&&base.teacher)||'',
       school:(iS>=0?cellClean(r[iS]):'')||(base&&base.school)||'',
       status:(iSt>=0?cellClean(r[iSt]):'')};
-  }).filter(Boolean);
+  }).filter(Boolean)
+    /* קורס בלי רצועה (טרם שובץ בלוח הניהול) ובלי נעילה לבית ספר — לא מוצג בכלל.
+       אחרת הוא נראה לכל בית ספר, בכל רצועה ובכל מתחם, ותלמידים יכולים להירשם אליו בטעות */
+    .filter(m=>trackKeyOf(m.track)||m.school);
   return {list:merged, authoritative:true};
 }
 
