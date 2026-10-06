@@ -1291,7 +1291,8 @@ function regOpenForTrack_(tk){
 const regOpenFor_=c=>regOpenForTrack_(trackKeyOf(c&&c.track));
 /* לפי שם קורס שנבחר בטופס — פתוח אם אחד המופעים המותרים לבית הספר שנבחר פתוח */
 function regOpenForName_(name){
-  const inst=ALL_INSTANCES.filter(c=>c.name===name && (!state.school || schoolAllows(c,state.school)));
+  /* משווים לפי שם בסיס: בכרטיס/בתפריט השם בלי "— מחזור א'", אבל בגיליון המופעים נושאים את הסיומת */
+  const inst=ALL_INSTANCES.filter(c=>baseName(c.name)===baseName(name) && (!state.school || schoolAllows(c,state.school)));
   return inst.length?inst.some(regOpenFor_):regOpenForTrack_('');
 }
 function recomputeReg_(){ applyRegState_(); }
