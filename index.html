@@ -12,7 +12,8 @@
 <div dir="rtl" lang="he">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- הפונטים נטענים ברקע (לא חוסמים את הצגת העמוד) — ברשתות מסוננות שחוסמות את גוגל פונטס העמוד עדיין מוצג -->
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 /* ============== צבעי המותג — נדגמו מהאתר האמיתי (Wix) של קמפוס חמ"ד ==============
    כחול (#5CA6D8) — צבע הכפתורים/ניווט העיקרי · סגול-מוב (#B585BC) — מצב פעיל/הדגשה
@@ -1328,6 +1329,15 @@ async function loadRegSheet_(){
   });
 })();
 applyRegState_();
+/* אם אחרי 15 שניות לא נטענו קורסים — כנראה חסימה של סינון אינטרנט (למשל רימון) או רשת איטית: מציגים הסבר */
+setTimeout(()=>{
+  try{
+    if(typeof ALL_INSTANCES!=='undefined' && ALL_INSTANCES.length) return;
+    const n=document.createElement('div'); n.className='pg-regclosed'; n.style.margin='14px auto'; n.style.maxWidth='900px';
+    n.textContent='הקורסים לא נטענו. ייתכן שהסינון של האינטרנט חוסם את הדף. אפשר לנסות מרשת אחרת (למשל נתוני הסלולר), או לבקש מספק הסינון לאשר את הכתובות: github.io, docs.google.com, script.google.com, drive.google.com.';
+    const g=document.getElementById('grid'); g.parentNode.insertBefore(n,g);
+  }catch(e){}
+},15000);
 loadRegSheet_();
 setInterval(loadRegSheet_,30000);
 boot();
