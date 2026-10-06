@@ -1340,6 +1340,8 @@ setTimeout(()=>{
 },15000);
 loadRegSheet_();
 setInterval(loadRegSheet_,30000);
+/* רענון "נשארו X מקומות" כל 45 שניות, כדי שהרשמות של אחרים ישתקפו בלי לרענן את הדף */
+setInterval(()=>{ if(document.hidden) return; loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} }); },45000);
 boot();
 </script>
 
