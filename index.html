@@ -622,6 +622,9 @@ async function mergeAssignments(raw){
   const iN=col(h,'שם הקורס'), iA=col(h,'מתחם'), iT=col(h,'רצועה'),
         iTe=col(h,'מורה'), iS=col(h,'בית ספר'), iSt=col(h,'סטטוס');
   const byName={}; raw.forEach(c=>{ byName[c.name]=c; });
+  /* התאמה גם בלי סיומת המחזור: אם שם המופע בלשונית השיבוץ כולל "— מחזור א'" והשם
+     בלשונית הקורסים בלעדיה (או להפך), התמונה/התיאור עדיין מתחברים לקורס הנכון */
+  const byBase={}; raw.forEach(c=>{ const k=baseName(c.name); if(!byBase[k]) byBase[k]=c; });
   /* חשוב: "שם הקורס" יכול לחזור על עצמו כמה פעמים בלוח השיבוץ — כמה קבוצות
      מקבילות של אותו קורס/מחזור, בו-זמנית, ברצועות/בתי ספר שונים (למשל אותו
      "מחזור א'" רץ גם ברצועה 2 וגם ברצועה 3 עבור בתי ספר שונים). כל שורה
@@ -631,7 +634,7 @@ async function mergeAssignments(raw){
      בנפרד לכל בית ספר שנבחר (ר' renderGrid/buildCourseSelect). */
   const merged=rows.slice(1).map(r=>{
     const n=cellClean(r[iN]); if(!n) return null;
-    const base=byName[n];
+    const base=byName[n]||byBase[baseName(n)];
     return {...(base||{name:n,domain:'',audience:'',track:'',teacher:'',school:'',
       cap:0,status:'',desc:'',image:'',prompt:'',presentationLink:'',videoLink:'',syllabusLink:''}),
       name:n,
