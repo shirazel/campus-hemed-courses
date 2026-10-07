@@ -782,6 +782,18 @@ function schoolNeedsSlot_(schoolName){
   return !!(info && info.slots.length>1);
 }
 const slotLabel_=k=>{const s=SLOTS.find(x=>x.key===k); return s?s.label+' ('+s.time+')':k;};
+/* בתי ספר שבהם הכיתה קובעת את הרצועה (7.10.2026, לבקשת שירה). בתיכון פלך: ז'–ח' לומדות ברצועה 1,
+   ט'–י' ברצועה 2. בבית ספר כזה התלמידה בוחרת כיתות ולא "רצועה", ובטופס אפשר לבחור רק כיתה
+   שמתאימה — כך אי אפשר להירשם בטעות לקורס של הרצועה השנייה.
+   להוספת בית ספר: שורה נוספת באותו מבנה, עם השם בדיוק כפי שהוא מופיע ברשימת בתי הספר. */
+const GRADE_SLOT_RULES={
+  'תיכון פלך':{"ז'":'9:30',"ח'":'9:30',"ט'":'11:10',"י'":'11:10'}
+};
+const gradeRule_=school=>GRADE_SLOT_RULES[school]||null;
+/* הכיתות ששייכות לרצועה נתונה בבית ספר עם כלל כזה, למשל ["ז'","ח'"] */
+const gradesOfSlot_=(school,k)=>{ const r=gradeRule_(school); return r?Object.keys(r).filter(g=>r[g]===k):[]; };
+const slotOptLabel_=(school,k)=>{ const g=gradesOfSlot_(school,k);
+  return g.length?('כיתות '+g.join(', ')+' · '+slotLabel_(k)):slotLabel_(k); };
 /* טקסט תצוגה ליד "איפוס סינון": מסביר לפי מה מסונן, או מזהיר אם חסר שיבוץ */
 function schoolTrackLabel_(schoolName){
   if(!schoolName) return '';
@@ -794,7 +806,9 @@ function schoolTrackLabel_(schoolName){
     return '⚠️ בית ספר מעורב — יש לבחור למעלה "בן" או "בת" כדי לראות את הקורסים הרלוונטיים.';
   }
   if(info.slots.length>1 && !state.slot){
-    return '⚠️ בית הספר שלכם לומד ביותר מרצועה אחת — יש לבחור למעלה באיזו רצועה הכיתה שלכם, כדי לראות את הקורסים שלה.';
+    return gradeRule_(schoolName)
+      ? '⚠️ יש לבחור למעלה באיזו כיתה אתם, כדי לראות את הקורסים של הכיתה שלכם.'
+      : '⚠️ בית הספר שלכם לומד ביותר מרצועה אחת — יש לבחור למעלה באיזו רצועה הכיתה שלכם, כדי לראות את הקורסים שלה.';
   }
   return 'משויך ל: '+(info.slots.length>1?slotLabel_(state.slot):labels)+(info.gender?' · '+(info.gender==='מעורב'?state.gender:info.gender):'');
 }
@@ -1098,11 +1112,16 @@ function refreshSchoolGate(){
     el.style.display=needsSlot?'':'none';
     if(needsSlot){
       const info=findSchoolInfo_(state.school);
-      el.innerHTML='<option value="">באיזו רצועה הכיתה שלכם לומדת?</option>'+
-        info.slots.map(k=>'<option value="'+esc(k)+'">'+esc(slotLabel_(k))+'</option>').join('');
+      el.innerHTML='<option value="">'+(gradeRule_(state.school)?'באיזו כיתה אתם?':'באיזו רצועה הכיתה שלכם לומדת?')+'</option>'+
+        info.slots.map(k=>'<option value="'+esc(k)+'">'+esc(slotOptLabel_(state.school,k))+'</option>').join('');
       el.value=state.slot||'';
     }
   });
+  {
+    const cls=document.getElementById('fClass'), allowed=(gradeRule_(state.school)&&state.slot)?gradesOfSlot_(state.school,state.slot):null;
+    [...cls.options].forEach(o=>{ if(!o.value) return; const ok=!allowed||allowed.includes(o.value); o.disabled=!ok; o.hidden=!ok; });
+    if(cls.value && allowed && !allowed.includes(cls.value)) cls.value='';
+  }
   const note=document.getElementById('schoolTrackNote');
   if(note) note.textContent=schoolTrackLabel_(state.school);
   buildCourseSelect();
@@ -1248,6 +1267,14 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
   }
   /* בלי בדיקות מקדימות מול השרת (היו איטיות) — שולחים מיד. השרת עצמו מונע כפילות (אותה ת.ז. לאותו
      קורס) ואוכף את מכסת הקורס. */
+  /* בית ספר שבו הכיתה קובעת את הרצועה: הכיתה שנבחרה בטופס חייבת להתאים לרצועה שנבחרה */
+  {
+    const rule=gradeRule_(state.school), cls=document.getElementById('fClass').value;
+    if(rule && rule[cls] && state.slot && rule[cls]!==state.slot){
+      dupMsg.textContent='כיתה '+cls+' לומדת ב'+slotLabel_(rule[cls])+', והקורס שבחרתם שייך לרצועה אחרת. נא לסגור את הטופס, לבחור בראש העמוד את הכיתה הנכונה, ולבחור קורס מחדש.';
+      dupMsg.style.display='block'; return;
+    }
+  }
   /* הרצועה שאליה נרשמים — נשמרת בגיליון ההרשמות, כדי שקורס שרץ בכמה רצועות לא יתערבב.
      אם התלמיד בחר רצועה (בית ספר עם כמה רצועות) — היא; אחרת הרצועה היחידה שבה הקורס מוצע לבית הספר שלו. */
   {
