@@ -849,12 +849,18 @@ function matchesFilters(c){
    לפי ת.ז.) שמגיעה מ-doGet(action=courseCounts), לא רק על המספר הסטטי
    של המכסה. אם עדיין לא נטענה ספירה (בעליית עמוד) או שלקורס אין מכסה
    מוגדרת — פשוט לא מציגים תג. */
-function spotsLabel_(c){
-  if(!c.cap || !COUNTS_READY) return '';
+/* כמה מקומות נשארו בקבוצה (קורס+רצועה). null = עדיין לא ידוע (אין מכסה, או שהספירה לא הגיעה מהשרת). */
+function spotsLeft_(c){
+  if(!c || !c.cap || !COUNTS_READY) return null;
   /* כשיש ספירה לפי רצועה: נרשמים לרצועה של הכרטיס + הרשמות ישנות של הקורס שאין להן רצועה */
   const tk=trackKeyOf(c.track);
   const used=(SLOT_COUNTS && tk) ? ((SLOT_COUNTS[c.name+'|'+tk]||0)+(NOSLOT_COUNTS[c.name]||0)) : (COURSE_COUNTS[c.name]||0);
-  const left=c.cap-used;
+  return c.cap-used;
+}
+const courseFull_=c=>{ const l=spotsLeft_(c); return l!==null && l<=0; };
+function spotsLabel_(c){
+  const left=spotsLeft_(c);
+  if(left===null) return '';
   if(left<=0) return `<span class="pg-badge" style="background:#fee2e2;color:#b91c1c">מלא</span>`;
   if(left<=3) return `<span class="pg-badge" style="background:#fef3c7;color:#92400e">נשארו ${left} מקומות</span>`;
   return `<span class="pg-badge ghost">נשארו ${left} מקומות</span>`;
@@ -1031,9 +1037,7 @@ function openModal(idx,triggerEl){
       </dl>
     </div>
     <div class="mfoot">
-      ${regOpenFor_(c)
-        ?`<button type="button" class="pg-btn pg-btn--primary" id="mReg">להרשמה לקורס זה</button>`
-        :`<button type="button" class="pg-btn pg-btn--primary" id="mReg" disabled>ההרשמה תיפתח בקרוב</button>`}
+      <button type="button" class="pg-btn pg-btn--primary" id="mReg" ${regBtnState_(c).on?'':'disabled'}>${regBtnState_(c).text}</button>
     </div>`;
   {
     const wrap=document.getElementById('modalWrap');
@@ -1045,7 +1049,7 @@ function openModal(idx,triggerEl){
   document.getElementById('mClose').onclick=closeModal;
   body.querySelectorAll('[data-media]').forEach(b=>{ b.onclick=()=>openMedia_(b.dataset.media,b.dataset.ext); });
   document.getElementById('mReg').onclick=(e)=>{
-    if(!regOpenFor_(c)) return;
+    if(!regBtnState_(c).on) return;
     const rect=e.currentTarget.getBoundingClientRect();
     const fakeTrigger={getBoundingClientRect:()=>rect}; // המיקום נלכד לפני שהמודל נסגר ומוחק את הכפתור
     closeModal();
@@ -1319,6 +1323,13 @@ function regOpenForTrack_(tk){
   return !!(tk && SHEET_OPEN[tk]);
 }
 const regOpenFor_=c=>regOpenForTrack_(trackKeyOf(c&&c.track));
+/* מצב כפתור ההרשמה: סגור (הרצועה עוד לא נפתחה) / מלא (הקבוצה הגיעה למכסה) / פתוח.
+   "מלא" נקבע רק כשיש ספירה אמיתית מהשרת; כשאין — הכפתור פתוח, והשרת עצמו חוסם מעבר למכסה. */
+function regBtnState_(c){
+  if(!regOpenFor_(c)) return {on:false,text:'ההרשמה תיפתח בקרוב'};
+  if(courseFull_(c)) return {on:false,text:'הקורס מלא'};
+  return {on:true,text:'להרשמה לקורס זה'};
+}
 /* לפי שם קורס שנבחר בטופס — פתוח אם אחד המופעים המותרים לבית הספר שנבחר פתוח */
 function regOpenForName_(name){
   /* משווים לפי שם בסיס: בכרטיס/בתפריט השם בלי "— מחזור א'", אבל בגיליון המופעים נושאים את הסיומת */
@@ -1343,7 +1354,7 @@ async function loadRegSheet_(){
   recomputeReg_();
 }function applyRegState_(){
   const b=document.getElementById('mReg'), c=window.__modalCourse;
-  if(b && c){ const o=regOpenFor_(c); b.disabled=!o; b.textContent=o?'להרשמה לקורס זה':'ההרשמה תיפתח בקרוב'; }
+  if(b && c){ const s=regBtnState_(c); b.disabled=!s.on; b.textContent=s.text; }
 }
 (function(){
   const logo=document.getElementById('heroLogo'); if(!logo) return;
@@ -1372,7 +1383,7 @@ setTimeout(()=>{
 loadRegSheet_();
 setInterval(loadRegSheet_,30000);
 /* רענון "נשארו X מקומות" כל 45 שניות, כדי שהרשמות של אחרים ישתקפו בלי לרענן את הדף */
-setInterval(()=>{ if(document.hidden) return; loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} }); },45000);
+setInterval(()=>{ if(document.hidden) return; loadCourseCounts_().then(()=>{ try{ renderGrid(); applyRegState_(); }catch(e){} }); },45000);
 boot();
 </script>
 
