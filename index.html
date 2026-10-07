@@ -576,17 +576,23 @@ function jsonpGet(params,timeoutMs){
     document.head.appendChild(s);
   });
 }
-let COURSE_COUNTS={}, SLOT_COUNTS=null, NOSLOT_COUNTS={};
+let COURSE_COUNTS={}, SLOT_COUNTS=null, NOSLOT_COUNTS={}, COUNTS_READY=false;
 async function loadCourseCounts_(){
   /* ספירה לפי קורס+רצועה (המכסה היא לכל קבוצה). אם השרת עוד בגרסה ישנה שלא מכירה את הפעולה —
      נופלים לספירה הכוללת לקורס. */
+  /* חשוב: לספירה הכוללת (בלי רצועה) נופלים רק אם השרת עונה במפורש שהוא לא מכיר את הפעולה החדשה.
+     אם השרת פשוט איטי או לא ענה — משאירים את הספירה הקודמת כמו שהיא. אחרת קורס שרץ בשתי רצועות
+     מוצג בטעות כ"מלא" (סופרים את שתי הקבוצות יחד). */
+  let oldServer=false;
   try{
     const d=await jsonpGet({action:'countsDetailed'});
-    if(d && d.total && d.bySlot){ COURSE_COUNTS=d.total; SLOT_COUNTS=d.bySlot; NOSLOT_COUNTS=d.noSlot||{}; return; }
+    if(d && d.total && d.bySlot){ COURSE_COUNTS=d.total; SLOT_COUNTS=d.bySlot; NOSLOT_COUNTS=d.noSlot||{}; COUNTS_READY=true; return; }
+    if(d && d.error) oldServer=true;
   }catch(e){}
+  if(!oldServer) return;
   try{
     const resp=await jsonpGet({action:'courseCounts'});
-    if(resp && !resp.error){ COURSE_COUNTS=resp; SLOT_COUNTS=null; }
+    if(resp && !resp.error){ COURSE_COUNTS=resp; SLOT_COUNTS=null; COUNTS_READY=true; }
   }catch(e){ /* לא קריטי — אם זה נכשל פשוט לא נציג "נשארו X מקומות" */ }
 }
 function cellVal(c){if(!c)return ''; if(c.f!=null)return String(c.f); if(c.v==null)return ''; return String(c.v);}
@@ -844,7 +850,7 @@ function matchesFilters(c){
    של המכסה. אם עדיין לא נטענה ספירה (בעליית עמוד) או שלקורס אין מכסה
    מוגדרת — פשוט לא מציגים תג. */
 function spotsLabel_(c){
-  if(!c.cap) return '';
+  if(!c.cap || !COUNTS_READY) return '';
   /* כשיש ספירה לפי רצועה: נרשמים לרצועה של הכרטיס + הרשמות ישנות של הקורס שאין להן רצועה */
   const tk=trackKeyOf(c.track);
   const used=(SLOT_COUNTS && tk) ? ((SLOT_COUNTS[c.name+'|'+tk]||0)+(NOSLOT_COUNTS[c.name]||0)) : (COURSE_COUNTS[c.name]||0);
