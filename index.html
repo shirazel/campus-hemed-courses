@@ -356,6 +356,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
             <input type="text" id="fIdNumber" name="תז" required inputmode="numeric" autocomplete="off">
           </div>
           <input type="hidden" id="fCancelPrevious" name="cancelPrevious" value="">
+          <input type="hidden" id="fSlot" name="רצועה" value="">
           <div class="pg-btn-row" style="flex-direction:column;align-items:flex-start;gap:8px">
             <button type="submit" class="pg-btn pg-btn--primary" id="regSubmitBtn">שליחת פרטים ←</button>
             <div id="checkingNote" style="display:none;font-size:.9rem;color:var(--pg-muted)">בודק שהפרטים תקינים — זה עשוי לקחת כמה שניות…</div>
@@ -445,7 +446,7 @@ const KNOWN_DESC={
  'עיצוב גרפי בקנבה':{tags:['תיק עבודות'],
    d:'שפת העיצוב מהבסיס — צבע, טיפוגרפיה, איזון וקומפוזיציה — ויישום שלה בכלי שהתלמידות ישתמשו בו גם אחר כך. בסוף הקורס כל תלמידה יוצאת עם תיק עבודות משלה.'},
  'כתיבה יוצרת — כתיבת ספר, איור והפקה':{tags:['תוצר מודפס'],
-   d:'מרעיון ראשוני לספר מודפס. התלמידות לומדות לבנות דמות ועלילה, לכתוב ולערוך, לאייר ולעצב — ומלוות את הספר שלהן עד ההפקה הסופית.'},
+   d:'מרעיון ראשוני לספר מודפס. התלמידים והתלמידות לומדים לבנות דמות ועלילה, לכתוב ולערוך, לאייר ולעצב — ומלווים את הספר שלהם עד ההפקה הסופית.'},
  'צרפתית':{tags:['למתחילות'],
    d:'צרפתית מדוברת מהשיעור הראשון, בשילוב היכרות עם התרבות הצרפתית. הדגש על יכולת לנהל שיחה בסיסית ולא על שינון דקדוק.'},
  'אקסליום':{tags:['מיומנויות חשיבה'],
@@ -575,11 +576,17 @@ function jsonpGet(params,timeoutMs){
     document.head.appendChild(s);
   });
 }
-let COURSE_COUNTS={};
+let COURSE_COUNTS={}, SLOT_COUNTS=null, NOSLOT_COUNTS={};
 async function loadCourseCounts_(){
+  /* ספירה לפי קורס+רצועה (המכסה היא לכל קבוצה). אם השרת עוד בגרסה ישנה שלא מכירה את הפעולה —
+     נופלים לספירה הכוללת לקורס. */
+  try{
+    const d=await jsonpGet({action:'countsDetailed'});
+    if(d && d.total && d.bySlot){ COURSE_COUNTS=d.total; SLOT_COUNTS=d.bySlot; NOSLOT_COUNTS=d.noSlot||{}; return; }
+  }catch(e){}
   try{
     const resp=await jsonpGet({action:'courseCounts'});
-    if(resp && !resp.error) COURSE_COUNTS=resp;
+    if(resp && !resp.error){ COURSE_COUNTS=resp; SLOT_COUNTS=null; }
   }catch(e){ /* לא קריטי — אם זה נכשל פשוט לא נציג "נשארו X מקומות" */ }
 }
 function cellVal(c){if(!c)return ''; if(c.f!=null)return String(c.f); if(c.v==null)return ''; return String(c.v);}
@@ -838,7 +845,9 @@ function matchesFilters(c){
    מוגדרת — פשוט לא מציגים תג. */
 function spotsLabel_(c){
   if(!c.cap) return '';
-  const used=COURSE_COUNTS[c.name]||0;
+  /* כשיש ספירה לפי רצועה: נרשמים לרצועה של הכרטיס + הרשמות ישנות של הקורס שאין להן רצועה */
+  const tk=trackKeyOf(c.track);
+  const used=(SLOT_COUNTS && tk) ? ((SLOT_COUNTS[c.name+'|'+tk]||0)+(NOSLOT_COUNTS[c.name]||0)) : (COURSE_COUNTS[c.name]||0);
   const left=c.cap-used;
   if(left<=0) return `<span class="pg-badge" style="background:#fee2e2;color:#b91c1c">מלא</span>`;
   if(left<=3) return `<span class="pg-badge" style="background:#fef3c7;color:#92400e">נשארו ${left} מקומות</span>`;
@@ -1222,6 +1231,13 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
   }
   /* בלי בדיקות מקדימות מול השרת (היו איטיות) — שולחים מיד. השרת עצמו מונע כפילות (אותה ת.ז. לאותו
      קורס) ואוכף את מכסת הקורס. */
+  /* הרצועה שאליה נרשמים — נשמרת בגיליון ההרשמות, כדי שקורס שרץ בכמה רצועות לא יתערבב.
+     אם התלמיד בחר רצועה (בית ספר עם כמה רצועות) — היא; אחרת הרצועה היחידה שבה הקורס מוצע לבית הספר שלו. */
+  {
+    const tks=[...new Set(ALL_INSTANCES.filter(c=>baseName(c.name)===baseName(courseName) && schoolAllows(c,state.school))
+      .map(c=>trackKeyOf(c.track)).filter(Boolean))];
+    document.getElementById('fSlot').value=state.slot || (tks.length===1?tks[0]:'');
+  }
   window.__sending=true;
   window.__pendingReg={id:idNumber,course:courseName};
   submitBtn.disabled=true; submitBtn.textContent='שולח…';
