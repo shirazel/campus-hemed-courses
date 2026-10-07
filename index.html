@@ -1256,46 +1256,63 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
     document.getElementById('fSlot').value=state.slot || (tks.length===1?tks[0]:'');
   }
   window.__sending=true;
-  window.__pendingReg={id:idNumber,course:courseName};
   submitBtn.disabled=true; submitBtn.textContent='שולח…';
-  checkNote.textContent='שולח את ההרשמה…';
+  checkNote.textContent='שולח את ההרשמה ומחכה לאישור מהשרת — זה יכול לקחת עד דקה, נא לא לסגור…';
   checkNote.style.display='block';
-  this.dataset.bypassCheck='1';
-  this.submit();
-  setTimeout(finishReg_,6000); // אם השרת איטי — לא ממתינים לו מעבר ל-6 שניות
-});
-/* סיום השליחה — נקרא כשה-iframe הנסתר נטען (השרת ענה), או אחרי 6 שניות אם השרת של גוגל איטי,
-   כדי שהתלמיד לא יישאר תקוע על "שולח…" */
-function finishReg_(){
-  const pr=window.__pendingReg; if(!pr) return; window.__pendingReg=null;
+  const result=await sendReg_(this,{id:idNumber,course:courseName});
   window.__sending=false;
-  const sb=document.getElementById('regSubmitBtn'), cn=document.getElementById('checkingNote'), dm=document.getElementById('dupMsg');
-  sb.disabled=false; sb.textContent='שליחת פרטים ←'; cn.style.display='none';
-  /* מציגים הצלחה מיד, בלי להמתין לשרת האיטי של גוגל */
+  submitBtn.disabled=false; submitBtn.textContent='שליחת פרטים ←'; checkNote.style.display='none';
+  if(result.ok){ showRegSuccess_(); return; }
+  if(result.reason==='full'){
+    dupMsg.textContent='הקורס התמלא בינתיים, ולכן ההרשמה לא נקלטה. אפשר לסגור ולבחור קורס אחר.';
+  }else if(result.reason==='noanswer'){
+    dupMsg.textContent='ההרשמה לא נקלטה — השרת לא ענה. נא ללחוץ שוב על "שליחת פרטים" בעוד רגע. הפרטים שמילאתם נשמרו בטופס.';
+  }else{
+    dupMsg.textContent='ההרשמה לא נקלטה. נא לבדוק שכל הפרטים מלאים ולנסות שוב, ואם זה חוזר — לפנות לצוות.';
+  }
+  dupMsg.style.display='block';
+  loadCourseCounts_().then(()=>{ try{ renderGrid(); applyRegState_(); }catch(e){} });
+});
+/* שליחת ההרשמה וקריאת התשובה האמיתית של השרת (7.10.2026).
+   קודם הטופס נשלח ל-iframe נסתר, שממנו אי אפשר לקרוא תשובה — ולכן הוצגה "הצלחה" גם כשהשרת של גוגל
+   החזיר דף שגיאה או דחה את ההרשמה, ותלמידים ראו אישור בלי שנרשמו. עכשיו שולחים ב-fetch וקוראים את
+   התשובה: "ok" = נקלט; "error: course full" = מלא; כל דבר אחר (דף שגיאה של גוגל, ניתוק) = לא נקלט.
+   מנסים עד 3 פעמים — בטוח, כי השרת לא מוסיף שורה שנייה לאותה ת.ז. באותו קורס.
+   הצלחה מוצגת רק כשהשרת אישר, או כשבדיקה חוזרת מצאה את ההרשמה בגיליון. */
+async function sendReg_(form,pr){
+  const url=form.getAttribute('action');
+  const body=new URLSearchParams(new FormData(form));
+  for(let i=0;i<3;i++){
+    const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),40000);
+    try{
+      const res=await fetch(url,{method:'POST',body,signal:ctrl.signal});
+      const txt=(await res.text()).trim();
+      clearTimeout(timer);
+      if(/^ok/.test(txt)) return {ok:true};
+      if(/^error: course full/.test(txt)) return {ok:false,reason:'full'};
+      if(/^error:/.test(txt)) return {ok:false,reason:'server',detail:txt};
+      /* דף שגיאה של גוגל — מנסים שוב */
+    }catch(e){ clearTimeout(timer); }
+    await new Promise(r=>setTimeout(r,2000));
+  }
+  /* לא התקבלה תשובה ברורה: בודקים אם ההרשמה בכל זאת נשמרה */
+  try{
+    const r=await jsonpGet({action:'checkId',idNumber:pr.id},25000);
+    if(r && r.found && r.course===pr.course) return {ok:true};
+  }catch(e){}
+  return {ok:false,reason:'noanswer'};
+}
+/* מסך ההצלחה — מוצג רק אחרי שהשרת אישר שההרשמה נקלטה */
+function showRegSuccess_(){
   document.getElementById('regForm').reset();
   document.getElementById('fSchoolName').value=state.school||''; // reset() מרוקן גם את שדה בית הספר
   document.getElementById('fCancelPrevious').value='';
-  dm.style.display='none';
+  document.getElementById('dupMsg').style.display='none';
   document.getElementById('regFormArea').style.display='none';
-  const sa=document.getElementById('regSuccessArea'); sa.style.display='block';
+  document.getElementById('regSuccessArea').style.display='block';
   const old=document.getElementById('regWarn'); if(old) old.remove();
-  /* אימות ברקע: רק אם השרת עונה במפורש שההרשמה לא נמצאה — מוסיפים אזהרה; אם הוא איטי או לא עונה, לא עושים כלום */
-  (async()=>{
-    try{
-      const r=await jsonpGet({action:'checkId',idNumber:pr.id},25000);
-      if(!(r&&r.found&&r.course===pr.course)){
-        const w=document.createElement('div'); w.id='regWarn'; w.className='pg-regclosed';
-        w.textContent='שימו לב: לא הצלחנו לאשר שההרשמה נקלטה. אם לא תקבלו אישור מהצוות, אפשר להירשם שוב.';
-        sa.appendChild(w);
-      }
-    }catch(e){}
-    loadCourseCounts_().then(()=>{ try{ renderGrid(); }catch(e){} });
-  })();
+  loadCourseCounts_().then(()=>{ try{ renderGrid(); applyRegState_(); }catch(e){} });
 }
-document.getElementById('hidden_iframe').addEventListener('load',function(){
-  if(!this.dataset.first){this.dataset.first='1';return;} // ה-load הראשון הוא טעינת ה-iframe הריק עצמו
-  finishReg_();
-});
 document.getElementById('regSuccessClose').addEventListener('click',closeRegPopup);
 
 /* ---------- פתיחת ההרשמה ----------
