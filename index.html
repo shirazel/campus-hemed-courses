@@ -1213,6 +1213,13 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
     return;
   }
   /* כל השדות חובה — גם בלי רווחים בלבד */
+  /* שדה בית הספר הוא לקריאה בלבד ומתמלא מהבחירה למעלה. אחרי הרשמה מוצלחת הטופס מתאפס והשדה
+     התרוקן — ואז הרשמה שנייה באותו ביקור נשלחה בלי בית ספר (או נתקעה). ממלאים אותו מחדש כאן תמיד. */
+  document.getElementById('fSchoolName').value=state.school||'';
+  if(!state.school){
+    dupMsg.textContent='לא נבחר בית ספר. נא לסגור את הטופס, לבחור בית ספר בראש העמוד, ולנסות שוב.';
+    dupMsg.style.display='block'; return;
+  }
   for(const el of this.querySelectorAll("[required]")){
     if(String(el.value||"").trim()===""){
       dupMsg.textContent="כל השדות בטופס הם חובה — נא למלא את כולם.";
@@ -1256,6 +1263,7 @@ function finishReg_(){
   sb.disabled=false; sb.textContent='שליחת פרטים ←'; cn.style.display='none';
   /* מציגים הצלחה מיד, בלי להמתין לשרת האיטי של גוגל */
   document.getElementById('regForm').reset();
+  document.getElementById('fSchoolName').value=state.school||''; // reset() מרוקן גם את שדה בית הספר
   document.getElementById('fCancelPrevious').value='';
   dm.style.display='none';
   document.getElementById('regFormArea').style.display='none';
