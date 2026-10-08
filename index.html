@@ -357,6 +357,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
           </div>
           <input type="hidden" id="fCancelPrevious" name="cancelPrevious" value="">
           <input type="hidden" id="fSlot" name="רצועה" value="">
+          <input type="hidden" id="fGender" name="מגדר" value="">
           <div class="pg-btn-row" style="flex-direction:column;align-items:flex-start;gap:8px">
             <button type="submit" class="pg-btn pg-btn--primary" id="regSubmitBtn">שליחת פרטים ←</button>
             <div id="checkingNote" style="display:none;font-size:.9rem;color:var(--pg-muted)">בודק שהפרטים תקינים — זה עשוי לקחת כמה שניות…</div>
@@ -1281,6 +1282,15 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
     const tks=[...new Set(ALL_INSTANCES.filter(c=>baseName(c.name)===baseName(courseName) && schoolAllows(c,state.school))
       .map(c=>trackKeyOf(c.track)).filter(Boolean))];
     document.getElementById('fSlot').value=state.slot || (tks.length===1?tks[0]:'');
+  }
+  /* המגדר — נשמר בגיליון ההרשמות. לפי המתחם של הקבוצה שאליה נרשמים (קורס+רצועה בלוח השיבוץ);
+     אם אינו חד-משמעי — לפי בית הספר (ובבית ספר מעורב: מה שהתלמיד/ה בחרו). */
+  {
+    const auds=[...new Set(ALL_INSTANCES.filter(c=>baseName(c.name)===baseName(courseName) && schoolAllows(c,state.school))
+      .map(c=>c.audience).filter(a=>a==='בנים'||a==='בנות'))];
+    const info=findSchoolInfo_(state.school);
+    const schoolG=info?(info.gender==='מעורב'?(state.gender||''):info.gender):'';
+    document.getElementById('fGender').value=auds.length===1?auds[0]:((schoolG==='בנים'||schoolG==='בנות')?schoolG:'');
   }
   window.__sending=true;
   submitBtn.disabled=true; submitBtn.textContent='שולח…';
