@@ -190,6 +190,7 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 .pg-modal{position:relative;background:var(--pg-bg);border-radius:var(--pg-radius-lg);
   max-width:640px;width:100%;max-height:90vh;overflow:auto;box-shadow:var(--pg-shadow)}
 .pg-modal img{width:100%;aspect-ratio:3/1;max-height:160px;object-fit:cover;display:block}
+.pg-modal .thumb.ph{width:100%;display:flex;align-items:center;justify-content:center;font-size:3rem}
 .pg-modal .mbody{padding:22px 26px 12px}
 .pg-modal .mfoot{position:sticky;bottom:0;background:var(--pg-bg);padding:12px 26px 16px;border-top:1px solid var(--pg-border)}
 .pg-modal .mfoot .pg-btn{width:100%}
@@ -320,6 +321,12 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
               <option value="ח'">ח'</option>
               <option value="ט'">ט'</option>
               <option value="י'">י'</option>
+              <option value="א'">א'</option>
+              <option value="ב'">ב'</option>
+              <option value="ג'">ג'</option>
+              <option value="ד'">ד'</option>
+              <option value="ה'">ה'</option>
+              <option value="ו'">ו'</option>
             </select>
           </div>
           <div class="pg-field">
@@ -433,8 +440,78 @@ const MAP={
 const SLOTS=[{key:'9:30',label:'רצועה 1',time:'09:30–11:00'},
              {key:'11:10',label:'רצועה 2',time:'11:10–12:40'},
              {key:'14:00',label:'רצועה 3',time:'14:00–15:30'}];
-const trackLabel=t=>{const s=SLOTS.find(s=>(t||'').includes(s.key)); return s?(s.label+' · '+s.time):(t||'')};
-const trackKeyOf=t=>{const s=SLOTS.find(s=>(t||'').includes(s.key)); return s?s.key:''};
+const isElemTrack_=t=>/^יום\s/.test(String(t||'').trim());
+const trackLabel=t=>{ if(isElemTrack_(t)) return String(t).trim(); const s=SLOTS.find(s=>(t||'').includes(s.key)); return s?(s.label+' · '+s.time):(t||'')};
+const trackKeyOf=t=>{ if(isElemTrack_(t)) return String(t).trim(); const s=SLOTS.find(s=>(t||'').includes(s.key)); return s?s.key:''};
+
+/* ===================== בתי ספר יסודיים (25.10.2026, לבקשת שירה) =====================
+   קורסי היסודי רצים בימים ובשעות משלהם (לא ברצועות 1–3 של התיכונים), ולכל מפגש יש
+   רשימת בתי ספר שנרשמו אליו. הנתונים נלקחו מהטבלה "עותק של מפת ההרשמה" ששירה שלחה.
+   אם קיימת בגיליון הראשי לשונית בשם "יסודי" (עמודות: שם הקורס | מתחם | יום | שעה | מורה |
+   בתי ספר — בתי הספר מופרדים בפסיק) — היא גוברת על הרשימה כאן, וכך אפשר לעדכן בלי קוד.
+   מגדר בית הספר נגזר אוטומטית: רק קורסי בנים = בנים, רק בנות = בנות, שניהם = מעורב. */
+const ELEM_SHEET='יסודי';
+const ELEM_DEFAULT=[
+  ['רובוטיקה','בנים',"יום א'",'10:25–11:10','ענת רונן אשוח','אהרן הרא"ה בנים, נטעים'],
+  ['מבוא לרפואה','בנות',"יום א'",'10:25–11:10','מירב גורמן','כנפי רוח בנות חריש, נטעים'],
+  ['רובוטיקה','בנות',"יום א'",'11:10–11:55','ענת רונן אשוח','כנפי רוח בנות חריש, נתיב אליעזר'],
+  ['רובוטיקה','בנים',"יום א'",'12:15–13:00','ענת רונן אשוח','אהרן הרא"ה בנים'],
+  ['גיימינג','בנים',"יום א'",'14:30–16:00','שלומי נויפלד','יעבץ, אהרן הרא"ה בנים, שירת הים, נטעים, רמב"ם'],
+  ['עיצוב גרפי בקנבה','בנות',"יום ב'",'8:30–9:15','יוכבד חניא','כנפי רוח בנות חריש, נתיב אליעזר'],
+  ['מבוא לרפואה','בנים',"יום ב'",'9:15–10:00','מירב גורמן','אהרן הרא"ה בנים'],
+  ['יצירת סרטונים','בנות',"יום ב'",'10:25–11:10','יוכבד חניא','שירת הים, כנפי רוח בנות חריש, נתיב אליעזר'],
+  ['קולנוע','בנים',"יום ג'",'11:10–11:55','אוריה יעקוביאן','אהרן הרא"ה בנים, רמב"ם'],
+  ['קולנוע','בנות',"יום ג'",'10:25–11:10','אוריה יעקוביאן','שירת הים, נטעים, רמב"ם']
+];
+/* תיאורים (טיוטה — לבדיקת שירה), תחום ותמונה. image_from = לקחת את התמונה מקורס תיכון קיים. */
+const ELEM_INFO={
+  'רובוטיקה':{domain:'טכנולוגיה',d:'בונים ומתכנתים רובוטים אמיתיים: מחברים חיישנים ומנועים, כותבים פקודות ורואים את הרובוט מגיב. לומדים לחשוב כמו מהנדסים — לנסות, לתקן ולנסות שוב.'},
+  'מבוא לרפואה':{domain:'מדעים',d:'מסע אל גוף האדם: איך הלב, הריאות והמוח עובדים, מה קורה כשחולים ואיך רופאים מאבחנים. פעילויות, ניסויים קטנים והיכרות עם עולם הרפואה.'},
+  'גיימינג':{domain:'טכנולוגיה',d:'מתכננים ובונים משחק מחשב משלנו: דמויות, שלבים, חוקים ונקודות. לומדים את יסודות התכנות והעיצוב של משחקים, ומסיימים עם משחק שאפשר לשחק בו.'},
+  'עיצוב גרפי בקנבה':{domain:'אמנות ועיצוב',d:'לומדות לעצב בקנבה: צבע, אותיות והרכבה של תמונה. מעצבות הזמנות, כרזות ופוסטים, ויוצאות עם תיק עבודות קטן משלכן.',image_from:'עיצוב גרפי בקנבה'},
+  'יצירת סרטונים':{domain:'קולנוע ותקשורת',d:'מצלמות, עורכות ומפיקות סרטונים קצרים: רעיון, תסריט קצר, צילום בטלפון ועריכה עם מוזיקה וכיתוביות.'},
+  'קולנוע':{domain:'קולנוע ותקשורת',d:'עולם הקולנוע מבפנים: איך מספרים סיפור בתמונות, זוויות צילום, תאורה וסאונד — ומפיקים יחד סרט קצר.',image_from:'חיים בסרט - מבוא לקולנוע והפקת סרטונים'}
+};
+let ELEM_SCHOOLS={};   // שם בית ספר -> {gender}
+const isElemSchool_=n=>!!ELEM_SCHOOLS[n];
+const splitSchools_=s=>String(s||'').split(/[,،\n]/).map(x=>x.trim()).filter(Boolean);
+const normTime_=s=>{ const p=String(s||'').replace(/[-–—]/g,'–').split('–').map(x=>x.trim()).filter(Boolean);
+  if(p.length!==2) return String(s||'').trim();
+  const m=x=>{const [h,mm]=x.split(/[:.]/); return (+h)*60+(+(mm||0));};
+  return m(p[0])<=m(p[1])?p[0]+'–'+p[1]:p[1]+'–'+p[0]; };
+/* בונה את מופעי היסודי מטבלה (שורות: קורס, מתחם, יום, שעה, מורה, בתי ספר) */
+function buildElementary_(rows,hsRaw){
+  const list=rows.map(r=>({course:cellClean(r[0]),aud:cellClean(r[1]),day:cellClean(r[2]),time:normTime_(r[3]),teacher:cellClean(r[4]),schools:splitSchools_(r[5])}))
+    .filter(x=>x.course && x.day && x.time && x.schools.length);
+  const dup={}; list.forEach(x=>{ const k=x.course+'|'+x.aud; dup[k]=(dup[k]||0)+1; });
+  const hsByName={}; (hsRaw||[]).forEach(c=>{ hsByName[c.name]=c; });
+  const schools={};
+  const inst=list.map(x=>{
+    const info=ELEM_INFO[x.course]||{};
+    const src=info.image_from?hsByName[info.image_from]:null;
+    /* אותו קורס לאותו מתחם ביותר ממפגש אחד — השם כולל את המועד, כדי שיהיה ברור לאיזה מפגש נרשמים */
+    const name=dup[x.course+'|'+x.aud]>1?(x.course+' — '+x.day+' '+x.time.split('–')[0]):x.course;
+    x.schools.forEach(s=>{ (schools[s]=schools[s]||{})[x.aud]=true; });
+    return {name,domain:info.domain||'',audience:x.aud,track:x.day+' '+x.time,teacher:x.teacher,school:'',
+      cap:20,status:'מאושר',desc:info.d||'',image:src?src.image:'',prompt:'',presentationLink:'',videoLink:'',syllabusLink:'',
+      elementary:true,elemSchools:x.schools};
+  });
+  ELEM_SCHOOLS={};
+  Object.keys(schools).forEach(s=>{ const g=Object.keys(schools[s]);
+    ELEM_SCHOOLS[s]={gender:g.length===1?g[0]:'מעורב'}; });
+  return inst;
+}
+async function loadElementary_(hsRaw){
+  let rows=null;
+  try{
+    const r=tableRows(await jsonpTableByName(ELEM_SHEET));
+    if(r.length>1 && col(r[0],'שם הקורס')>=0){
+      const h=r[0], idx=[col(h,'שם הקורס'),col(h,'מתחם'),col(h,'יום'),col(h,'שעה'),col(h,'מורה'),col(h,'בתי ספר')];
+      if(idx.every(i=>i>=0)) rows=r.slice(1).map(x=>idx.map(i=>x[i]));
+    }
+  }catch(e){ /* אין לשונית — משתמשים ברשימה המובנית */ }
+  return buildElementary_(rows||ELEM_DEFAULT,hsRaw);
+}
 
 /* תיאורים ידועים מראש (מוזנים מראש עד שתתווסף עמודת "תיאור" בגיליון) */
 const KNOWN_DESC={
@@ -743,6 +820,7 @@ async function loadSchoolInfo(){
    משווה אחרי הסרת הסיומת בסוגריים משני הצדדים. */
 function normSchoolKey_(n){ return (n||'').replace(/\s*\([^)]*\)\s*$/,'').trim(); }
 function findSchoolInfo_(name){
+  if(ELEM_SCHOOLS[name]) return {gender:ELEM_SCHOOLS[name].gender,slots:['יסודי'],elementary:true};
   if(SCHOOL_INFO[name]) return SCHOOL_INFO[name];
   const norm=normSchoolKey_(name);
   if(SCHOOL_INFO[norm]) return SCHOOL_INFO[norm];
@@ -756,6 +834,13 @@ function findSchoolInfo_(name){
    נבחר בפופ-אפ/בשורת הסינון) ומסננים לפי זה בדיוק כמו בית ספר לא-מעורב. */
 function schoolAllows(c,schoolName){
   if(!schoolName) return false;
+  /* בית ספר יסודי: רק המפגשים שבית הספר רשום אליהם, לפי מגדר */
+  if(isElemSchool_(schoolName)){
+    if(!c.elementary || !(c.elemSchools||[]).includes(schoolName)) return false;
+    const g=ELEM_SCHOOLS[schoolName].gender, eff=g==='מעורב'?(state.gender||''):g;
+    return !(c.audience && eff && c.audience!==eff);
+  }
+  if(c.elementary) return false;
   if(c.school) return c.school===schoolName;   // קורס נעול לבית ספר ספציפי
   const info=findSchoolInfo_(schoolName);
   /* סינון מחמיר (לפי בקשת שירה): אם אין לבית הספר שורה בלשונית "שיבוץ בתי
@@ -802,6 +887,10 @@ function schoolTrackLabel_(schoolName){
   if(!info || !info.slots.length){
     return '⚠️ אין נתוני שיבוץ עבור בית ספר זה — לא מוצג אף קורס עד שיושלם השיבוץ בלוח הניהול.';
   }
+  if(info.elementary){
+    if(info.gender==='מעורב' && !state.gender) return '⚠️ בית ספר מעורב — יש לבחור למעלה "בן" או "בת" כדי לראות את הקורסים הרלוונטיים.';
+    return 'בית ספר יסודי · '+(info.gender==='מעורב'?state.gender:info.gender);
+  }
   const labels=info.slots.map(k=>{const s=SLOTS.find(x=>x.key===k);return s?s.label+' ('+s.time+')':k;}).join(', ');
   if(info.gender==='מעורב' && !state.gender){
     return '⚠️ בית ספר מעורב — יש לבחור למעלה "בן" או "בת" כדי לראות את הקורסים הרלוונטיים.';
@@ -831,6 +920,7 @@ async function boot(){
       const res=await mergeAssignments(raw);
       if(res.authoritative) raw=res.list;
     }catch(e){ console.warn('שילוב לשונית השיבוץ נכשל — ממשיכים לפי לשונית הקורסים בלבד',e); }
+    try{ raw=raw.concat(await loadElementary_(raw)); }catch(e){ console.warn('טעינת קורסי היסודי נכשלה',e); }
     finalizeCourses(raw);
     afterLoad('מסונכרן מגיליון הקורסים · '+new Date().toLocaleDateString('he-IL'));
   }catch(e){
@@ -851,7 +941,11 @@ let state={school:'',gender:'',slot:''};
 function buildFilters(){
   /* בית הספר שלי — רשימה נפתחת מלאה ממאסטר המוסדות, גם בשורת הסינון
      וגם בפופ-אפ (שני מקומות לאותה בחירה, כפי שביקשה שירה) */
-  const names=SCHOOLS.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  const opt=v=>`<option value="${esc(v)}">${esc(v)}</option>`;
+  const elem=Object.keys(ELEM_SCHOOLS).sort((a,b)=>a.localeCompare(b,'he'));
+  const names=elem.length
+    ? `<optgroup label="חטיבות ותיכונים">${SCHOOLS.map(opt).join('')}</optgroup><optgroup label="בתי ספר יסודיים">${elem.map(opt).join('')}</optgroup>`
+    : SCHOOLS.map(opt).join('');
   ['fMySchool','fMySchoolPopup'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.innerHTML=el.options[0].outerHTML+names;
   });
@@ -1119,7 +1213,9 @@ function refreshSchoolGate(){
     }
   });
   {
-    const cls=document.getElementById('fClass'), allowed=(gradeRule_(state.school)&&state.slot)?gradesOfSlot_(state.school,state.slot):null;
+    const ELEM_GRADES=["א'","ב'","ג'","ד'","ה'","ו'"], HS_GRADES=["ז'","ח'","ט'","י'"];
+    const cls=document.getElementById('fClass'),
+      allowed=isElemSchool_(state.school)?ELEM_GRADES:((gradeRule_(state.school)&&state.slot)?gradesOfSlot_(state.school,state.slot):HS_GRADES);
     [...cls.options].forEach(o=>{ if(!o.value) return; const ok=!allowed||allowed.includes(o.value); o.disabled=!ok; o.hidden=!ok; });
     if(cls.value && allowed && !allowed.includes(cls.value)) cls.value='';
   }
@@ -1366,13 +1462,15 @@ function previewOpen_(){ try{ return localStorage.getItem('pgPreviewOpen')==='1'
      הרשמה פתוחה אחה"צ    ← רצועת 14:00  (גם: "הרשמה פתוחה 14")
    נקרא בכל טעינה ושוב כל 30 שניות. אם הקריאה נכשלת — נשאר המצב הקודם.
    קורס בלי רצועה נפתח רק עם "הרשמה פתוחה" הכללית. */
-let SHEET_OPEN={all:false,'9:30':false,'11:10':false,'14:00':false};
+let SHEET_OPEN={all:false,'9:30':false,'11:10':false,'14:00':false,'יסודי':false};
 const SLOT_ROW_KEYS={
   '9:30':['בוקר','9','930'],
   '11:10':['צהרים','צהריים','11','1110'],
   '14:00':['אחהצ','אחרהצהריים','אחריהצהריים','14','1400']
 };
 function regOpenForTrack_(tk){
+  /* היסודי נפתח רק בשורה "הרשמה פתוחה יסודי" — לא בשורה הכללית, שכבר פתוחה לתיכונים */
+  if(isElemTrack_(tk)) return REGISTRATION_OPEN || previewOpen_() || !!SHEET_OPEN['יסודי'];
   if(REGISTRATION_OPEN || previewOpen_() || SHEET_OPEN.all) return true;
   return !!(tk && SHEET_OPEN[tk]);
 }
@@ -1401,6 +1499,7 @@ async function loadRegSheet_(){
       if(key.indexOf('הרשמהפתוחה')!==0) continue;
       const rest=key.slice('הרשמהפתוחה'.length);
       if(rest==='לפניהצהריים'){ next['9:30']=on; next['11:10']=on; continue; }
+      if(rest==='יסודי'){ next['יסודי']=on; continue; }
       Object.keys(SLOT_ROW_KEYS).forEach(slot=>{ if(SLOT_ROW_KEYS[slot].includes(rest)) next[slot]=on; });
     } });
     SHEET_OPEN=next;
