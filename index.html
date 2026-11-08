@@ -1218,6 +1218,12 @@ function refreshSchoolGate(){
       allowed=isElemSchool_(state.school)?ELEM_GRADES:((gradeRule_(state.school)&&state.slot)?gradesOfSlot_(state.school,state.slot):HS_GRADES);
     [...cls.options].forEach(o=>{ if(!o.value) return; const ok=!allowed||allowed.includes(o.value); o.disabled=!ok; o.hidden=!ok; });
     if(cls.value && allowed && !allowed.includes(cls.value)) cls.value='';
+    /* בקשת שירה 8.11.2026: לתלמידי יסודי אין מייל וטלפון משלהם — מסתירים את שני השדות (לא חובה),
+       ונשארים טלפון ומייל ההורה. בתיכונים הטופס לא משתנה. */
+    const elem=isElemSchool_(state.school);
+    ['fEmail','fPhone'].forEach(id=>{ const el=document.getElementById(id); if(!el) return;
+      const f=el.closest('.pg-field'); if(f) f.style.display=elem?'none':'';
+      el.required=!elem; if(elem) el.value=''; });
   }
   const note=document.getElementById('schoolTrackNote');
   if(note) note.textContent=schoolTrackLabel_(state.school);
@@ -1354,7 +1360,7 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
   }
   /* בדיקות תקינות: ת.ז. של 9 ספרות, וכתובות מייל תקינות (כולל סיומת, למשל name@gmail.com) */
   const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
-  if(!emailOk(studentEmail)){
+  if(!isElemSchool_(state.school) && !emailOk(studentEmail)){
     dupMsg.textContent='כתובת המייל של התלמיד/ה אינה תקינה — נא לבדוק (למשל name@gmail.com).';
     dupMsg.style.display='block'; document.getElementById('fEmail').focus(); return;
   }
