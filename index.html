@@ -154,6 +154,8 @@ button,input,select,textarea{font-family:inherit;font-size:inherit}
 .pg-card .thumb.ph{display:flex;align-items:center;justify-content:center;font-size:2.6rem}
 .pg-card .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:.45rem;flex:1}
 .pg-card h3{font-size:1.1rem;font-weight:600;line-height:1.35}
+.pg-elem-tag{display:inline-block;vertical-align:middle;font-size:.72rem;font-weight:600;line-height:1;padding:4px 9px;border-radius:999px;background:#FDE7D3;color:#A85410;margin-inline-start:4px}
+.pg-elem-head{grid-column:1/-1;margin:26px 0 0;padding-top:20px;border-top:2px solid #F9A349;font-size:1.4rem;font-weight:700;color:#A85410}
 .pg-badges{display:flex;gap:6px;flex-wrap:wrap}
 .pg-badge{display:inline-block;font-weight:600;font-size:.78rem;padding:.22rem .65rem;border-radius:var(--pg-radius-pill)}
 .pg-badge.orange{background:var(--pg-orange);color:var(--pg-on-orange)}
@@ -452,36 +454,57 @@ const trackKeyOf=t=>{ if(isElemTrack_(t)) return String(t).trim(); const s=SLOTS
    מגדר בית הספר נגזר אוטומטית: רק קורסי בנים = בנים, רק בנות = בנות, שניהם = מעורב. */
 const ELEM_SHEET='יסודי';
 const ELEM_DEFAULT=[
-  ['רובוטיקה','בנים',"יום א'",'10:25–11:10','ענת רונן אשוח','אהרן הרא"ה בנים, נטעים'],
-  ['מבוא לרפואה','בנות',"יום א'",'10:25–11:10','מירב גורמן','כנפי רוח בנות חריש, נטעים'],
-  ['רובוטיקה','בנות',"יום א'",'11:10–11:55','ענת רונן אשוח','כנפי רוח בנות חריש, נתיב אליעזר'],
-  ['רובוטיקה','בנים',"יום א'",'12:15–13:00','ענת רונן אשוח','אהרן הרא"ה בנים'],
-  ['גיימינג','בנים',"יום א'",'14:30–16:00','שלומי נויפלד','יעבץ, אהרן הרא"ה בנים, שירת הים, נטעים, רמב"ם'],
-  ['עיצוב גרפי בקנבה','בנות',"יום ב'",'8:30–9:15','יוכבד חניא','כנפי רוח בנות חריש, נתיב אליעזר'],
-  ['מבוא לרפואה','בנים',"יום ב'",'9:15–10:00','מירב גורמן','אהרן הרא"ה בנים'],
-  ['יצירת סרטונים','בנות',"יום ב'",'10:25–11:10','יוכבד חניא','שירת הים, כנפי רוח בנות חריש, נתיב אליעזר'],
-  ['קולנוע','בנים',"יום ג'",'11:10–11:55','אוריה יעקוביאן','אהרן הרא"ה בנים, רמב"ם'],
-  ['קולנוע','בנות',"יום ג'",'10:25–11:10','אוריה יעקוביאן','שירת הים, נטעים, רמב"ם']
+  /* גיבוי בלבד — משמש רק אם טבלת המנהלת לא נטענת. בלי בתי ספר המפגש לא מוצג, ולכן בגיבוי לא מוצג דבר
+     (עדיף מלהציג מערכת ישנה). המערכת הישנה שמורה בקובץ הגיבוי "index - גיבוי לפני טבלת המנהלת 2026-11-11". */
+  ['אקסליום','בנים',"יום א'",'9:00–9:40','רחמים חניא',''],
+  ['כלים דיגיטליים','בנים',"יום א'",'10:20–11:05','רחמים חניא',''],
+  ['עריכת סרטונים','בנות',"יום א'",'10:20–11:05','יוכבד חניא',''],
+  ['רובוטיקה','בנים',"יום א'",'11:05–11:45','ענת רונן אשוח',''],
+  ['רובוטיקה','בנים',"יום א'",'12:00–12:45','ענת רונן אשוח',''],
+  ['חיים בסרט – קולנוע','בנים',"יום ג'",'8:45–9:30','אוריה יעקוביאן',''],
+  ['עיצוב גרפי בקנבה','בנות',"יום ג'",'9:00–9:40','אורטל שטרית',''],
+  ['כתיבה יוצרת','בנות',"יום ג'",'10:20–11:05','אורטל שטרית',''],
+  ['אקסליום','בנות',"יום ג'",'10:20–11:05','יוכבד חניא','']
 ];
 /* תיאורים (טיוטה — לבדיקת שירה), תחום ותמונה. image = קובץ בתיקיית images; image_from = לקחת את התמונה מקורס תיכון קיים. */
 const ELEM_INFO={
   'רובוטיקה':{domain:'טכנולוגיה',d:'בונים ומתכנתים רובוטים אמיתיים: מחברים חיישנים ומנועים, כותבים פקודות ורואים את הרובוט מגיב. לומדים לחשוב כמו מהנדסים — לנסות, לתקן ולנסות שוב.',image:'images/elem-robotics.jpg'},
   'מבוא לרפואה':{domain:'מדעים',d:'מסע אל גוף האדם: איך הלב, הריאות והמוח עובדים, מה קורה כשחולים ואיך רופאים מאבחנים. פעילויות, ניסויים קטנים והיכרות עם עולם הרפואה.',image:'images/elem-medicine.jpg'},
   'גיימינג':{domain:'טכנולוגיה',d:'מתכננים ובונים משחק מחשב משלנו: דמויות, שלבים, חוקים ונקודות. לומדים את יסודות התכנות והעיצוב של משחקים, ומסיימים עם משחק שאפשר לשחק בו.',image:'images/elem-gaming.jpg'},
-  'עיצוב גרפי בקנבה':{domain:'אמנות ועיצוב',d:'לומדות לעצב בקנבה: צבע, אותיות והרכבה של תמונה. מעצבות הזמנות, כרזות ופוסטים, ויוצאות עם תיק עבודות קטן משלכן.',image_from:'עיצוב גרפי בקנבה'},
+  'עיצוב גרפי בקנבה':{domain:'אמנות ועיצוב',d:'לומדות לעצב בקנבה: צבע, אותיות והרכבה של תמונה. מעצבות הזמנות, כרזות ופוסטים, ויוצאות עם תיק עבודות קטן משלכן.',image:'images/elem-canva.jpg'},
   'יצירת סרטונים':{domain:'קולנוע ותקשורת',d:'מצלמות, עורכות ומפיקות סרטונים קצרים: רעיון, תסריט קצר, צילום בטלפון ועריכה עם מוזיקה וכיתוביות.',image:'images/elem-video.jpg'},
-  'קולנוע':{domain:'קולנוע ותקשורת',d:'עולם הקולנוע מבפנים: איך מספרים סיפור בתמונות, זוויות צילום, תאורה וסאונד — ומפיקים יחד סרט קצר.',image_from:'חיים בסרט - מבוא לקולנוע והפקת סרטונים'}
+  'קולנוע':{domain:'קולנוע ותקשורת',d:'עולם הקולנוע מבפנים: איך מספרים סיפור בתמונות, זוויות צילום, תאורה וסאונד — ומפיקים יחד סרט קצר.',image:'images/elem-cinema.jpg'},
+  /* מערכת 11.11.2026 (טבלת המנהלת) — שמות הקורסים כפי שהם בטבלה */
+  'עריכת סרטונים':{domain:'קולנוע ותקשורת',d:'מצלמות, עורכות ומפיקות סרטונים קצרים: רעיון, תסריט קצר, צילום בטלפון ועריכה עם מוזיקה וכיתוביות.',image:'images/elem-video.jpg'},
+  'חיים בסרט – קולנוע':{domain:'קולנוע ותקשורת',d:'עולם הקולנוע מבפנים: איך מספרים סיפור בתמונות, זוויות צילום, תאורה וסאונד — ומפיקים יחד סרט קצר.',image:'images/elem-cinema.jpg'},
+  'אקסליום':{domain:'מאמן החשיבה',d:'משחקי חשיבה, חידות ואתגרים שמאמנים את המוח: היגיון, זיכרון, ריכוז ופתרון בעיות — בדרך כיפית ומשחקית.',image_from:'אקסליום'},
+  'כלים דיגיטליים':{domain:'טכנולוגיה',d:'היכרות עם כלים דיגיטליים שימושיים: מסמכים, מצגות, חיפוש נכון ברשת ושימוש בטוח ואחראי במחשב — וכלים שעוזרים ללמידה וליצירה.',image:'images/elem-digital.jpg'},
+  'כתיבה יוצרת':{domain:'כתיבה ואמנות',d:'כותבות ומאיירות סיפור משלכן: דמויות, עלילה ודמיון — ומפיקות ממנו ספר קטן.',image_from:'כתיבה יוצרת — כתיבת ספר, איור והפקה'}
 };
 let ELEM_SCHOOLS={};   // שם בית ספר -> {gender}
 const isElemSchool_=n=>!!ELEM_SCHOOLS[n];
-const splitSchools_=s=>String(s||'').split(/[,،\n]/).map(x=>x.trim()).filter(Boolean);
+/* בתי הספר היסודיים המוכרים — כדי לפצל נכון גם כשבטבלה נכתבו כמה שמות בלי פסיק ביניהם
+   (למשל "יעבץ שירת הים"). שם שלא ברשימה נשאר כפי שנכתב. */
+const KNOWN_ELEM_SCHOOLS=['אהרן הרא"ה בנים','כנפי רוח בנות חריש','נתיב אליעזר','שירת הים','נטעים','רמב"ם','יעבץ'];
+const splitSchools_=s=>{
+  const out=[];
+  String(s||'').split(/[,،\n;]/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean).forEach(piece=>{
+    let rest=' '+piece+' ', found=[];
+    KNOWN_ELEM_SCHOOLS.forEach(k=>{ if(rest.indexOf(' '+k+' ')>-1){ found.push(k); rest=rest.replace(' '+k+' ',' '); } });
+    rest=rest.trim();
+    if(found.length && !rest) out.push(...found);
+    else out.push(piece);   // לא זוהה במלואו — משאירים כמו שנכתב
+  });
+  return [...new Set(out)];
+};
 const normTime_=s=>{ const p=String(s||'').replace(/[-–—]/g,'–').split('–').map(x=>x.trim()).filter(Boolean);
   if(p.length!==2) return String(s||'').trim();
   const m=x=>{const [h,mm]=x.split(/[:.]/); return (+h)*60+(+(mm||0));};
   return m(p[0])<=m(p[1])?p[0]+'–'+p[1]:p[1]+'–'+p[0]; };
 /* בונה את מופעי היסודי מטבלה (שורות: קורס, מתחם, יום, שעה, מורה, בתי ספר) */
 function buildElementary_(rows,hsRaw){
-  const list=rows.map(r=>({course:cellClean(r[0]),aud:cellClean(r[1]),day:cellClean(r[2]),time:normTime_(r[3]),teacher:cellClean(r[4]),schools:splitSchools_(r[5])}))
+  const list=rows.map(r=>({course:cellClean(r[0]),aud:cellClean(r[1]),day:cellClean(r[2]),time:normTime_(r[3]),teacher:cellClean(r[4]),schools:splitSchools_(r[5]),
+      cap:parseInt(String(r[6]==null?'':r[6]).replace(/[^\d]/g,''),10)||20}))
     .filter(x=>x.course && x.day && x.time && x.schools.length);
   const dup={}; list.forEach(x=>{ const k=x.course+'|'+x.aud; dup[k]=(dup[k]||0)+1; });
   const hsByName={}; (hsRaw||[]).forEach(c=>{ hsByName[c.name]=c; });
@@ -493,7 +516,7 @@ function buildElementary_(rows,hsRaw){
     const name=dup[x.course+'|'+x.aud]>1?(x.course+' — '+x.day+' '+x.time.split('–')[0]):x.course;
     x.schools.forEach(s=>{ (schools[s]=schools[s]||{})[x.aud]=true; });
     return {name,domain:info.domain||'',audience:x.aud,track:x.day+' '+x.time,teacher:x.teacher,school:'',
-      cap:20,status:'מאושר',desc:info.d||'',image:info.image||(src?src.image:''),prompt:'',presentationLink:'',videoLink:'',syllabusLink:'',
+      cap:x.cap,status:'מאושר',desc:info.d||'',image:info.image||(src?src.image:''),prompt:'',presentationLink:'',videoLink:'',syllabusLink:'',
       elementary:true,elemSchools:x.schools};
   });
   ELEM_SCHOOLS={};
@@ -501,15 +524,35 @@ function buildElementary_(rows,hsRaw){
     ELEM_SCHOOLS[s]={gender:g.length===1?g[0]:'מעורב'}; });
   return inst;
 }
+/* בקשת שירה 11.11.2026: מערכת היסודי נקראת חי מהטבלה שהמנהלת ממלאת ("מערכת יסודי"),
+   באותה טבלה שממנה נקראים גם קישורי הזום לדפי הכניסה לשיעורים. מפגש מופיע בהרשמה רק אחרי
+   שמולאו לו בתי ספר. שורה 1 בטבלה היא הנחיה למילוי — הכותרות בשורה 2. */
+const ELEM_FILE_ID='1GvcNjIOntNgF-zdEY5KTbERLKHmLMQe2A8SoDminXwY';
+const ELEM_TAB='מערכת יסודי', ELEM_RANGE='A2:L';
+function jsonpElemTable_(){
+  return new Promise((resolve,reject)=>{
+    const cb='chemedElemCB'+(__jsonpN++)+'_'+Date.now();
+    const timer=setTimeout(()=>{cleanup();reject(new Error('פסק זמן בטבלת היסודי'))},15000);
+    function cleanup(){try{delete window[cb]}catch(e){window[cb]=undefined}
+      const el=document.getElementById(cb); if(el)el.remove(); clearTimeout(timer);}
+    window[cb]=function(resp){cleanup();
+      if(!resp||resp.status==='error'){reject(new Error('שגיאה בקריאת טבלת היסודי'));return;}
+      resolve(resp.table);};
+    const s=document.createElement('script'); s.id=cb;
+    s.src='https://docs.google.com/spreadsheets/d/'+ELEM_FILE_ID+'/gviz/tq?sheet='+encodeURIComponent(ELEM_TAB)+
+      '&range='+ELEM_RANGE+'&headers=1&tqx=out:json;responseHandler:'+cb;
+    s.onerror=()=>{cleanup();reject(new Error('שגיאת רשת בטבלת היסודי'))};
+    document.head.appendChild(s);
+  });
+}
 async function loadElementary_(hsRaw){
   let rows=null;
   try{
-    const r=tableRows(await jsonpTableByName(ELEM_SHEET));
-    if(r.length>1 && col(r[0],'שם הקורס')>=0){
-      const h=r[0], idx=[col(h,'שם הקורס'),col(h,'מתחם'),col(h,'יום'),col(h,'שעה'),col(h,'מורה'),col(h,'בתי ספר')];
-      if(idx.every(i=>i>=0)) rows=r.slice(1).map(x=>idx.map(i=>x[i]));
-    }
-  }catch(e){ /* אין לשונית — משתמשים ברשימה המובנית */ }
+    const r=tableRows(await jsonpElemTable_());
+    const h=r[0]||[], idx=[col(h,'קורס'),col(h,'מגדר'),col(h,'יום'),col(h,'שעה'),col(h,'מורה'),col(h,'בתי ספר'),col(h,'מספר מקומות','מקומות')];
+    if(idx.slice(0,6).every(i=>i>=0)) rows=r.slice(1).map(x=>idx.map(i=>i>=0?x[i]:''));
+    else console.warn('טבלת היסודי: לא נמצאו העמודות הצפויות',h);
+  }catch(e){ console.warn('טבלת היסודי לא נטענה — משתמשים ברשימה המובנית',e); }
   return buildElementary_(rows||ELEM_DEFAULT,hsRaw);
 }
 
@@ -750,8 +793,9 @@ async function mergeAssignments(raw){
 function dedupe(list){
   const seen=new Map();
   list.forEach(c=>{
-    const k=baseName(c.name);
-    if(!seen.has(k)) seen.set(k,{...c,name:k,cycles:0});
+    /* יסודי ותיכון לא מתאחדים לכרטיס אחד גם אם השם זהה (למשל "עיצוב גרפי בקנבה") */
+    const k=(c.elementary?'יסודי|':'')+baseName(c.name);
+    if(!seen.has(k)) seen.set(k,{...c,name:baseName(c.name),cycles:0});
     const e=seen.get(k); e.cycles++;
     if(!e.image && c.image) e.image=c.image;
     if(!e.desc && c.desc) e.desc=c.desc;
@@ -985,7 +1029,8 @@ function renderGrid(){
   const grid=document.getElementById('grid');
   document.getElementById('resCount').textContent=list.length+' קורסים';
   document.getElementById('emptyMsg').style.display=list.length?'none':'block';
-  grid.innerHTML=list.map((c,i)=>{
+  /* בקשת שירה 8.11.2026: בלי בחירת בית ספר — קורסי היסודי מוצגים בנפרד, תחת כותרת "קמפוס חמ"ד יסודי" */
+  const card=c=>{
     const idx=COURSES.indexOf(c);
     const img=fixImg(c.image);
     const thumb=img?`<img class="thumb" src="${esc(img)}" alt="${esc(c.name)}" loading="lazy">`
@@ -996,16 +1041,19 @@ function renderGrid(){
         <div class="pg-badges">
           ${c.domain?`<span class="pg-badge teal">${esc(c.domain)}</span>`:''}
           ${c.audience?`<span class="pg-badge ghost">${esc(c.audience)}</span>`:''}
-          ${c.cycles>1?`<span class="pg-badge orange">${c.cycles} מחזורים</span>`:''}
+          ${c.cycles>1&&!c.elementary?`<span class="pg-badge orange">${c.cycles} מחזורים</span>`:''}
           ${spotsLabel_(c)}
         </div>
-        <h3>${esc(c.name)}</h3>
+        <h3>${esc(c.name)}${c.elementary?' <span class="pg-elem-tag">יסודי</span>':''}</h3>
         <div class="pg-meta">${esc(c.teacher||'')}${c.track?' · '+esc(trackLabel(c.track)):''}</div>
         ${c.desc?`<div class="pg-desc">${esc(c.desc)}</div>`:''}
         <button class="pg-btn pg-btn--teal" type="button">לפרטים נוספים ←</button>
       </div>
     </article>`;
-  }).join('');
+  };
+  const elemList=state.school?[]:list.filter(c=>c.elementary);
+  grid.innerHTML=list.filter(c=>!elemList.includes(c)).map(card).join('')+
+    (elemList.length?'<h2 class="pg-elem-head">קמפוס חמ"ד יסודי</h2>'+elemList.map(card).join(''):'');
   grid.querySelectorAll('.pg-card').forEach(el=>{
     el.addEventListener('click',()=>requestOpen(+el.dataset.idx,el));
     el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();requestOpen(+el.dataset.idx,el);}});
@@ -1129,7 +1177,7 @@ function openModal(idx,triggerEl){
         ${c.audience?`<span class="pg-badge ghost">${esc(c.audience)}</span>`:''}
         ${(c.tags||[]).map(t=>`<span class="pg-badge ghost">${esc(t)}</span>`).join('')}
       </div>
-      <h2>${esc(c.name)}</h2>
+      <h2>${esc(c.name)}${c.elementary?' <span class="pg-elem-tag">יסודי</span>':''}</h2>
       ${(()=>{
         const yt=youtubeEmbed_(c.videoLink), dv=driveEmbed_(c.presentationLink);
         const btns=[];
@@ -1224,6 +1272,9 @@ function refreshSchoolGate(){
     ['fEmail','fPhone'].forEach(id=>{ const el=document.getElementById(id); if(!el) return;
       const f=el.closest('.pg-field'); if(f) f.style.display=elem?'none':'';
       el.required=!elem; if(elem) el.value=''; });
+    /* בקשת שירה 11.11.2026: ביסודי בלבד גם טלפון ומייל ההורה אינם חובה (השדות מוצגים, אפשר להשאיר ריקים).
+       בתיכונים — חובה כמו קודם. */
+    ['fParentPhone','fParentEmail'].forEach(id=>{ const el=document.getElementById(id); if(el) el.required=!elem; });
   }
   const note=document.getElementById('schoolTrackNote');
   if(note) note.textContent=schoolTrackLabel_(state.school);
@@ -1364,7 +1415,7 @@ document.getElementById('regForm').addEventListener('submit',async function(e){
     dupMsg.textContent='כתובת המייל של התלמיד/ה אינה תקינה — נא לבדוק (למשל name@gmail.com).';
     dupMsg.style.display='block'; document.getElementById('fEmail').focus(); return;
   }
-  if(!emailOk(parentEmail)){
+  if((parentEmail || !isElemSchool_(state.school)) && !emailOk(parentEmail)){
     dupMsg.textContent='כתובת המייל של ההורה אינה תקינה — נא לבדוק (למשל name@gmail.com).';
     dupMsg.style.display='block'; document.getElementById('fParentEmail').focus(); return;
   }
